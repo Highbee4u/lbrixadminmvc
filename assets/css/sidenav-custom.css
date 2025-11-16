@@ -1,0 +1,41 @@
+.sidenav {
+    max-height: 95vh !important;
+    height: auto !important;
+}
+
+.navbar-collapse {
+    height: auto !important;
+    max-height: calc(90vh - 100px) !important;
+}
+
+/* Reduce spacing between nav items */
+.nav-item {
+    margin-top: 0 !important;
+}
+
+.nav-item .mt-3 {
+    margin-top: 0.5rem !important;
+}
+
+/* Style for collapse arrows */
+.nav-link.collapsed::after {
+    /* content: '▼'; */
+    float: right;
+    transition: transform 0.2s;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.nav-link:not(.collapsed)::after {
+    /* content: '▼'; */
+    float: right;
+    transform: rotate(180deg);
+    transition: transform 0.2s;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+/* Hide the default collapse icon if any */
+.nav-link[data-bs-toggle="collapse"] i.collapse-icon {
+    display: none;
+}

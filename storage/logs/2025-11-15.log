@@ -1,0 +1,15 @@
+[2025-11-15 18:36:55] [DEBUG] Login attempt - Using field: email, value: cto@majadtek.com.ng
+[2025-11-15 18:36:55] [DEBUG] Login attempt - SQL: SELECT * FROM users WHERE email = :login AND isdeleted != -1 LIMIT 1
+[2025-11-15 18:36:55] [INFO] Login attempt - Found user: {"userid":1,"username":"admin","email":"cto@majadtek.com.ng","usertypeid":3,"status":1,"password_length":60}
+[2025-11-15 18:36:55] [INFO] Login attempt - Password verification starting. Hash length: 60
+[2025-11-15 18:36:55] [INFO] Login attempt - Bcrypt verification successful
+[2025-11-15 18:37:11] [DEBUG] Login attempt - Using field: email, value: cto@majadtek.com.ng
+[2025-11-15 18:37:11] [DEBUG] Login attempt - SQL: SELECT * FROM users WHERE email = :login AND isdeleted != -1 LIMIT 1
+[2025-11-15 18:37:11] [INFO] Login attempt - Found user: {"userid":1,"username":"admin","email":"cto@majadtek.com.ng","usertypeid":3,"status":1,"password_length":60}
+[2025-11-15 18:37:11] [INFO] Login attempt - Password verification starting. Hash length: 60
+[2025-11-15 18:37:11] [INFO] Login attempt - Bcrypt verification successful
+[2025-11-15 21:55:22] [DEBUG] Login attempt - Using field: email, value: cto@majadtek.com.ng
+[2025-11-15 21:55:22] [DEBUG] Login attempt - SQL: SELECT * FROM users WHERE email = :login AND isdeleted != -1 LIMIT 1
+[2025-11-15 21:55:22] [INFO] Login attempt - Found user: {"userid":1,"username":"admin","email":"cto@majadtek.com.ng","usertypeid":3,"status":1,"password_length":60}
+[2025-11-15 21:55:22] [INFO] Login attempt - Password verification starting. Hash length: 60
+[2025-11-15 21:55:23] [INFO] Login attempt - Bcrypt verification successful

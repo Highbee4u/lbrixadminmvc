@@ -1,0 +1,209 @@
+<?php $pageTitle = 'Property Request Detail'; ?>
+<?php include __DIR__ . '/../partials/topnav.php'; ?>
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <div class="row align-items-center">
+                        <div class="col-8">
+                            <h3 class="mb-0">Property Request Detail</h3>
+                        </div>
+                        <div class="col-4 text-end">
+                            <button type="button" onclick="window.history.back()" class="btn btn-sm btn-primary">Go Back</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <!-- Accordion for Property Info and Matching Properties -->
+                    <div class="accordion" id="propertyAccordion">
+                        
+                        <!-- Property Profile -->
+                        <div class="card">
+                            <div class="card-header bg-dark" id="propertyInfo">
+                                <h5 class="mb-0">
+                                    <button class="btn text-white w-100 text-left" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePropertyInfo" aria-expanded="true" aria-controls="collapsePropertyInfo">
+                                        Profile
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapsePropertyInfo" class="collapse show" aria-labelledby="propertyInfo" data-bs-parent="#propertyAccordion">
+                                <div class="card-body">
+                                    <h6 class="text-muted mb-4">Property Information</h6>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group mb-3">
+                                                <label class="form-control-label fw-bold">List Type</label>
+                                                <p><?php echo htmlspecialchars($property['bidtype_title'] ?? 'N/A', ENT_QUOTES); ?></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group mb-3">
+                                                <label class="form-control-label fw-bold">Description</label>
+                                                <p><?php echo htmlspecialchars($property['description'] ?? 'N/A', ENT_QUOTES); ?></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group mb-3">
+                                                <label class="form-control-label fw-bold">Price</label>
+                                                <p><?php echo isset($property['price']) ? number_format((float)$property['price'], 2, '.', ',') : 'N/A'; ?></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Matching Properties Listings -->
+                        <div class="card">
+                            <div class="card-header bg-dark" id="matchingProperties">
+                                <h5 class="mb-0">
+                                    <button class="btn text-white w-100 text-left" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMatchingProperties" aria-expanded="false" aria-controls="collapseMatchingProperties">
+                                        Matching Properties Listings
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapseMatchingProperties" class="collapse" aria-labelledby="matchingProperties" data-bs-parent="#propertyAccordion">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <?php if (!empty($matchingItems) && count($matchingItems) > 0): ?>
+                                            <?php foreach ($matchingItems as $item): ?>
+                                                <div class="col-lg-3 mb-3">
+                                                    <a href="/investments/view-project?id=<?php echo htmlspecialchars($item['itemid'], ENT_QUOTES); ?>" class="w-100">
+                                                        <div class="p-1">
+                                                            <img src="/<?php echo htmlspecialchars($item['picurl'], ENT_QUOTES); ?>" class="w-100" style="height: 150px; object-fit: cover;">
+                                                            <div class="mt-2 fw-bold"><?php echo htmlspecialchars($item['title'], ENT_QUOTES); ?></div>
+                                                        </div>
+                                                    </a>
+                                                    <div class="d-flex gap-2 mt-2">
+                                                        <button type="button" 
+                                                                class="btn btn-sm btn-success match-btn <?php echo (empty($property['itemid']) && $property['requeststatus'] == 0) ? '' : 'disabled'; ?>" 
+                                                                data-itemrequestid="<?php echo htmlspecialchars($property['itemrequestid'], ENT_QUOTES); ?>"
+                                                                data-itemid="<?php echo htmlspecialchars($item['itemid'], ENT_QUOTES); ?>"
+                                                                data-title="<?php echo htmlspecialchars($item['title'], ENT_QUOTES); ?>">
+                                                            Match
+                                                        </button>
+                                                        <button type="button" 
+                                                                class="btn btn-sm btn-danger unmatch-btn <?php echo (($property['requeststatus'] == 0) && !empty($property['itemid']) && ($item['itemid'] == $property['itemid'])) ? '' : 'disabled'; ?>" 
+                                                                data-itemrequestid="<?php echo htmlspecialchars($property['itemrequestid'], ENT_QUOTES); ?>"
+                                                                data-itemid="<?php echo htmlspecialchars($item['itemid'], ENT_QUOTES); ?>"
+                                                                data-title="<?php echo htmlspecialchars($item['title'], ENT_QUOTES); ?>">
+                                                            Un-match
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <div class="col-12">
+                                                <p class="text-muted">No matching properties found</p>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                    
+                                    <div class="mt-4">
+                                        <button type="button" 
+                                                class="btn btn-info text-white close-request-btn <?php echo (!empty($property['itemid']) && ($property['requeststatus'] == 0)) ? '' : 'disabled'; ?>" 
+                                                data-itemrequestid="<?php echo htmlspecialchars($property['itemrequestid'], ENT_QUOTES); ?>">
+                                            Close Request
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <?php include __DIR__ . '/../partials/footer.php'; ?>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Display session messages
+    <?php if (isset($_SESSION['success_message'])): ?>
+        toastr.success('<?php echo addslashes($_SESSION['success_message']); ?>');
+        <?php unset($_SESSION['success_message']); ?>
+    <?php endif; ?>
+    
+    <?php if (isset($_SESSION['error_message'])): ?>
+        toastr.error('<?php echo addslashes($_SESSION['error_message']); ?>');
+        <?php unset($_SESSION['error_message']); ?>
+    <?php endif; ?>
+
+    // Handle Match button
+    $('.match-btn').on('click', function() {
+        if ($(this).hasClass('disabled')) return;
+        
+        const itemrequestid = $(this).data('itemrequestid');
+        const itemid = $(this).data('itemid');
+        const title = $(this).data('title');
+
+        Swal.fire({
+            title: 'Match Property?',
+            text: `Are you sure you want to match this request to "${title}"?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#28a745',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, match it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = `/requests/property/view?id=${itemrequestid}&confirmitem=${itemid}`;
+            }
+        });
+    });
+
+    // Handle Un-match button
+    $('.unmatch-btn').on('click', function() {
+        if ($(this).hasClass('disabled')) return;
+        
+        const itemrequestid = $(this).data('itemrequestid');
+        const itemid = $(this).data('itemid');
+        const title = $(this).data('title');
+
+        Swal.fire({
+            title: 'Un-match Property?',
+            text: `Are you sure you want to un-match this request from "${title}"?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, un-match it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = `/requests/property/view?id=${itemrequestid}&cancelitem=${itemid}`;
+            }
+        });
+    });
+
+    // Handle Close Request button
+    $('.close-request-btn').on('click', function() {
+        if ($(this).hasClass('disabled')) return;
+        
+        const itemrequestid = $(this).data('itemrequestid');
+
+        Swal.fire({
+            title: 'Close Request?',
+            text: 'Are you sure you want to close this property request?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#17a2b8',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, close it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = `/requests/property/view?id=${itemrequestid}&requeststatus=1`;
+            }
+        });
+    });
+});
+</script>

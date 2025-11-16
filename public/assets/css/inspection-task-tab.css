@@ -1,0 +1,228 @@
+.table-responsive {
+    border: none;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+.table td {
+    vertical-align: middle;
+    border-top: 1px solid #e9ecef;
+}
+
+@media (max-width: 768px) {
+    .table th, .table td {
+        padding: 0.5rem 0.25rem;
+        font-size: 0.7rem;
+    }
+
+    .table th:nth-child(1), .table td:nth-child(1) {
+        min-width: 120px;
+    }
+
+    .table th:nth-child(2), .table td:nth-child(2) {
+        min-width: 100px;
+    }
+
+    .table th:nth-child(5), .table td:nth-child(5) {
+        display: none;
+    }
+
+    .table th:nth-child(6), .table td:nth-child(6) {
+        display: none;
+    }
+
+    .dropdown-menu {
+        min-width: 120px;
+    }
+
+    .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .card-header .row.g-2 {
+        margin-bottom: 1rem;
+    }
+
+    .card-header .col-md-2 {
+        margin-bottom: 0.5rem;
+    }
+
+    .card-header .col-md-4 .d-flex {
+        flex-wrap: wrap;
+        gap: 0.5rem !important;
+    }
+
+    .card-header .btn {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 576px) {
+    .table th:not(:nth-child(9)), .table td:not(:nth-child(9)) {
+        display: none;
+    }
+
+    .table th:nth-child(9), .table td:nth-child(9) {
+        display: table-cell;
+        text-align: center;
+        width: 60px;
+    }
+
+    .card-header .btn {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    /* Filter bar mobile adjustments */
+    .card-header .col-md-2,
+    .card-header .col-md-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-header .d-flex.gap-2 {
+        justify-content: center;
+    }
+
+    .card-header .form-label {
+        font-size: 0.7rem;
+        margin-bottom: 0.25rem;
+    }
+}
+
+.text-wrap {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.badge {
+    font-size: 0.65rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Additional styling for the manage team modal */
+/* Ensure the manage team modal and its backdrop appear above any fixed sidebars/menus.
+   The site's sidebar may use a high z-index; set these values high enough to guarantee
+   the modal overlays it. */
+#manageTeamModal {
+    z-index: 1060 !important;
+}
+
+/* Only raise backdrop when manage team modal is showing */
+.modal-backdrop.show:has(~ #manageTeamModal.show),
+#manageTeamModal.show ~ .modal-backdrop {
+    z-index: 1055 !important;
+}
+
+/* Ensure edit modal appears properly when opened */
+#editInspectionTaskModal {
+    z-index: 1060 !important;
+}
+
+#addInspectionTaskModal {
+    z-index: 1060 !important;
+}
+
+#assignTaskModal {
+    z-index: 1060 !important;
+}
+
+/* Right-positioned modal */
+.modal-dialog-right {
+    position: fixed;
+    top: 0;
+    right: 0;
+    margin: 0;
+    height: 100vh;
+    /* Use percentage width so modal-lg remains narrower than xl but still right-aligned */
+    width: 40vw;
+    max-width: 720px;
+    min-width: 360px;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+}
+
+#manageTeamModal.show .modal-dialog-right {
+    transform: translateX(0);
+}
+
+#manageTeamModal .modal-content {
+    height: 100vh;
+    border-radius: 0;
+    border-left: 1px solid #dee2e6;
+}
+
+#manageTeamModal .modal-body {
+    height: calc(100vh - 120px);
+    overflow-y: auto;
+}
+
+#manageTeamModal .card {
+    box-shadow: none;
+    border: 1px solid #e9ecef;
+    height: 100%;
+}
+
+#manageTeamModal .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    padding: 1rem;
+}
+
+#manageTeamModal .card-body {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #manageTeamModal .col-md-4,
+    #manageTeamModal .col-md-8 {
+        margin-bottom: 1rem;
+    }
+
+    #manageTeamModal .card-body {
+        max-height: 300px;
+    }
+
+    /* Mobile adjustments for right-positioned modal */
+    .modal-dialog-right {
+        width: 90vw;
+        max-width: none;
+    }
+}
+
+@media (max-width: 576px) {
+    .modal-dialog-right {
+        width: 100vw;
+    }
+}
+
+/* Scrollbar styling for team members list */
+#teamMembersList::-webkit-scrollbar {
+    width: 6px;
+}
+
+#teamMembersList::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+#teamMembersList::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+#teamMembersList::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
