@@ -146,7 +146,7 @@
         $('#addInspectionStatusForm').on('submit', function(e) {
             e.preventDefault();
             $.ajax({
-                url: "/admin/inspection-status/store",
+                url: "<?php echo url('admin/inspection-status/store'); ?>",
                 method: 'POST',
                 data: $(this).serialize(),
                 success: function(response) {
@@ -188,7 +188,7 @@
             e.preventDefault();
             let id = $('#edit_inspectionstatusid').val();
             $.ajax({
-                url: "/admin/inspection-status/" + id,
+                url: "<?php echo url('admin/inspection-status'); ?>/" + id,
                 method: 'PUT',
                 data: $(this).serialize(),
                 success: function(response) {
@@ -228,7 +228,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: "/admin/inspection-status/" + id,
+                        url: "<?php echo url('admin/inspection-status'); ?>/" + id,
                         method: 'DELETE',
                         data: {
                             csrf_token: "<?php echo $_SESSION['csrf_token'] ?? ''; ?>"

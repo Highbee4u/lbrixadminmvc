@@ -5,7 +5,7 @@
 
 $config = [
     'app' => [
-        'name' => 'Simple MVC Framework',
+        'name' => 'Lbrix Admin',
         'env' => 'development', // development, production
         'debug' => true,
         'timezone' => 'UTC',

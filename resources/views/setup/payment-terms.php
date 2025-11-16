@@ -195,7 +195,7 @@ $(document).ready(function() {
         e.preventDefault();
         let id = $('#edit_paytermid').val();
         $.ajax({
-            url: "/setup/payment-terms/" + encodeURIComponent(id),
+            url: "<?php echo url('setup/payment-terms'); ?>/" + encodeURIComponent(id),
             method: 'POST',
             data: $(this).serialize() + '&_method=PUT',
                         success: function(response) {
@@ -235,7 +235,7 @@ $(document).ready(function() {
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "/setup/payment-terms/" + encodeURIComponent(id),
+                    url: "<?php echo url('setup/payment-terms'); ?>/" + encodeURIComponent(id),
                     method: 'DELETE',
                     success: function(response) {
                         if(response.success) {

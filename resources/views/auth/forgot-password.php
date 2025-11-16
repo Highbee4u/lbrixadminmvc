@@ -32,7 +32,7 @@
                                     </div>
                                 <?php endif; ?>
                                 
-                                <form role="form" method="POST" action="/forgot-password" id="forgotPasswordForm">
+                                <form role="form" method="POST" action="<?php echo url('forgot-password'); ?>" id="forgotPasswordForm">
                                     <input type="hidden" name="csrf_token" value="<?php echo Session::token(); ?>">
                                     
                                     <div class="flex flex-col mb-3">
@@ -56,7 +56,7 @@
                             <div class="card-footer text-center pt-0 px-lg-2 px-1">
                                 <p class="mb-1 text-sm mx-auto">
                                     Remember your password?
-                                    <a href="/login" class="text-primary text-gradient font-weight-bold">Back to Login</a>
+                                    <a href="<?php echo url('login'); ?>" class="text-primary text-gradient font-weight-bold">Back to Login</a>
                                 </p>
                             </div>
                         </div>

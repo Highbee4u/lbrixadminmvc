@@ -178,7 +178,7 @@ $(document).ready(function() {
     $('#addStateForm').on('submit', function(e) {
         e.preventDefault();
         $.ajax({
-            url: "<?php echo "/setup/states"; ?>",
+            url: "<?php echo url('setup/states'); ?>",
             method: 'POST',
             data: $(this).serialize(),
             success: function(response) {
@@ -222,7 +222,7 @@ $(document).ready(function() {
         e.preventDefault();
         let id = $('#edit_stateid').val();
         $.ajax({
-            url: "<?php echo "/setup/states"; ?>/" + id,
+            url: "<?php echo url('setup/states'); ?>/" + id,
             method: 'POST',
             data: $(this).serialize(),
             success: function(response) {
@@ -262,7 +262,7 @@ $(document).ready(function() {
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "<?php echo "/setup/states"; ?>/" + id,
+                    url: "<?php echo url('setup/states'); ?>/" + id,
                     method: 'DELETE',
                     success: function(response) {
                         if(response.success) {

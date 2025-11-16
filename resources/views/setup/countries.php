@@ -173,7 +173,7 @@ $(document).ready(function() {
     $('#addCountryForm').on('submit', function(e) {
         e.preventDefault();
         $.ajax({
-            url: "/setup/countries",
+            url: "<?php echo url('setup/countries'); ?>",
             method: 'POST',
             data: $(this).serialize(),
             success: function(response) {
@@ -217,7 +217,7 @@ $(document).ready(function() {
         e.preventDefault();
         let id = $('#edit_country_id').val();
         $.ajax({
-            url: "/setup/countries/" + id,
+            url: "<?php echo url('setup/countries'); ?>/" + id,
             method: 'POST',
             data: $(this).serialize(),
             success: function(response) {
@@ -257,7 +257,7 @@ $(document).ready(function() {
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "/setup/countries/" + id,
+                    url: "<?php echo url('setup/countries'); ?>/" + id,
                     method: 'DELETE',
                     success: function(response) {
                         if(response.success) {

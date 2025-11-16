@@ -197,7 +197,7 @@ $(document).ready(function() {
         let id = $('#edit_itempictypeid').val();
 
         $.ajax({
-            url: "/setup/item-pic-types/" + id,
+            url: "<?php echo url('setup/item-pic-types'); ?>/" + id,
             method: 'PUT',
             data: $(this).serialize(),
                         success: function(response) {
@@ -237,7 +237,8 @@ $(document).ready(function() {
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "/setup/item-pic-types/" + id,
+                
+                    url: "<?php echo url('setup/item-pic-types'); ?>/" + id,
                     method: 'DELETE',
                                         success: function(response) {
                         if(response.success) {

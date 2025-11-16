@@ -240,7 +240,7 @@ $(document).ready(function() {
     $('#addInvestmentForm').on('submit', function(e) {
         e.preventDefault();
         $.ajax({
-            url: "/admin/investments",
+            url: "<?php echo url('admin/investments'); ?>",
             method: 'POST',
             data: $(this).serialize(),
             success: function(response) {
@@ -290,7 +290,7 @@ $(document).ready(function() {
         e.preventDefault();
         let id = $('#edit_investmentid').val();
         $.ajax({
-            url: "/admin/investments/" + id,
+            url: "<?php echo url('admin/investments'); ?>/" + id,
             method: 'PUT',
             data: $(this).serialize(),
             success: function(response) {
@@ -330,7 +330,7 @@ $(document).ready(function() {
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "/admin/investments/" + id,
+                    url: "<?php echo url('admin/investments'); ?>/" + id,
                     method: 'DELETE',
                     data: {
                         csrf_token: "<?php echo $_SESSION['csrf_token'] ?? ''; ?>"

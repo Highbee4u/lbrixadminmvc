@@ -9,29 +9,30 @@ class RequestController extends Controller {
     }
 
     /**
-     * Display property requests (servicetypeid 1 or 2)
+     * Handle property requests - both listing and single view
      */
-    public function properties() {
+    public function properties($id = null) {
         $request = Request::getInstance();
+
+        // If ID is provided, handle single property request
+        if ($id) {
+            return $this->handlePropertyRequest($id);
+        }
+
+        // Otherwise, display property requests list
         $page = (int)$request->get('page', 1);
         $perPage = 12;
-        
+
         $properties = $this->requestService->getPropertyRequests($page, $perPage);
 
         $this->viewWithLayout('requests/properties', compact('properties'));
     }
 
     /**
-     * View a single property request
+     * Handle single property request (view and actions)
      */
-    public function viewProperty() {
+    private function handlePropertyRequest($id) {
         $request = Request::getInstance();
-        $id = $request->get('id');
-
-        if (!$id) {
-            $this->redirect('/requests/properties');
-            return;
-        }
 
         // Handle match/unmatch/close actions
         if ($request->get('confirmitem')) {
@@ -41,7 +42,7 @@ class RequestController extends Controller {
             } else {
                 $_SESSION['error_message'] = 'Could not match property';
             }
-            $this->redirect('/requests/property/view?id=' . $id);
+            $this->redirect('requests/properties/' . $id);
             return;
         }
 
@@ -51,7 +52,7 @@ class RequestController extends Controller {
             } else {
                 $_SESSION['error_message'] = 'Could not un-match property';
             }
-            $this->redirect('/requests/property/view?id=' . $id);
+            $this->redirect('requests/properties/' . $id);
             return;
         }
 
@@ -61,7 +62,7 @@ class RequestController extends Controller {
             } else {
                 $_SESSION['error_message'] = 'Could not close properties request';
             }
-            $this->redirect('/requests/property/view?id=' . $id);
+            $this->redirect('requests/properties/' . $id);
             return;
         }
 
@@ -72,40 +73,44 @@ class RequestController extends Controller {
         }
 
         if (!$property) {
-            $this->redirect('/requests/properties');
+            $this->redirect('requests/properties');
             return;
         }
 
-        // Get matching items
-        $matchingItems = $this->requestService->getMatchingItems($id);
+        // Get matching items with pagination
+        $page = (int)$request->get('page', 1);
+        $perPage = 12;
+        $matchingItems = $this->requestService->getMatchingItems($id, $page, $perPage);
 
         $this->viewWithLayout('requests/view-property', compact('property', 'matchingItems'));
     }
 
+
     /**
-     * Display investment requests (servicetypeid 3 or 4)
+     * Handle investment requests - both listing and single view
      */
-    public function investments() {
+    public function investments($id = null) {
         $request = Request::getInstance();
+
+        // If ID is provided, handle single investment request
+        if ($id) {
+            return $this->handleInvestmentRequest($id);
+        }
+
+        // Otherwise, display investment requests list
         $page = (int)$request->get('page', 1);
         $perPage = 12;
-        
+
         $investments = $this->requestService->getInvestmentRequests($page, $perPage);
 
         $this->viewWithLayout('requests/investments', compact('investments'));
     }
 
     /**
-     * View a single investment request
+     * Handle single investment request (view and actions)
      */
-    public function viewInvestment() {
+    private function handleInvestmentRequest($id) {
         $request = Request::getInstance();
-        $id = $request->get('id');
-
-        if (!$id) {
-            $this->redirect('/requests/investments');
-            return;
-        }
 
         // Handle match/unmatch/close actions
         if ($request->get('confirmitem')) {
@@ -115,7 +120,7 @@ class RequestController extends Controller {
             } else {
                 $_SESSION['error_message'] = 'Could not match investment';
             }
-            $this->redirect('/requests/investment/view?id=' . $id);
+            $this->redirect('requests/investments/' . $id);
             return;
         }
 
@@ -125,7 +130,7 @@ class RequestController extends Controller {
             } else {
                 $_SESSION['error_message'] = 'Could not un-match investment';
             }
-            $this->redirect('/requests/investment/view?id=' . $id);
+            $this->redirect('requests/investments/' . $id);
             return;
         }
 
@@ -135,21 +140,24 @@ class RequestController extends Controller {
             } else {
                 $_SESSION['error_message'] = 'Could not close investment request';
             }
-            $this->redirect('/requests/investment/view?id=' . $id);
+            $this->redirect('requests/investments/' . $id);
             return;
         }
 
         $investment = $this->requestService->getInvestmentRequestById($id);
 
         if (!$investment) {
-            $this->redirect('/requests/investments');
+            $this->redirect('requests/investments');
             return;
         }
 
-        // Get matching items
-        $matchingItems = $this->requestService->getMatchingItems($id);
+        // Get matching items with pagination
+        $page = (int)$request->get('page', 1);
+        $perPage = 12;
+        $matchingItems = $this->requestService->getMatchingItems($id, $page, $perPage);
 
         $this->viewWithLayout('requests/view-investment', compact('investment', 'matchingItems'));
     }
+
 }
 

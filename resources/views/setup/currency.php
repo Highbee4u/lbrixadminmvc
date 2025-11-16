@@ -209,7 +209,7 @@ $(document).ready(function() {
     $('#addCurrencyForm').on('submit', function(e) {
         e.preventDefault();
         $.ajax({
-            url: "/setup/currency",
+            url: "<?php echo url('setup/currency'); ?>",
             method: 'POST',
             data: $(this).serialize(),
             success: function(response) {
@@ -257,7 +257,7 @@ $(document).ready(function() {
         e.preventDefault();
         let id = $('#edit_currencyid').val();
         $.ajax({
-            url: "/setup/currency/" + id,
+            url: "<?php echo url('setup/currency'); ?>/" + id,
             method: 'POST',
             data: $(this).serialize(),
             success: function(response) {
@@ -297,7 +297,7 @@ $(document).ready(function() {
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "/setup/currency/" + id,
+                    url: "<?php echo url('setup/currency'); ?>/" + id,
                     method: 'DELETE',
                     success: function(response) {
                         if(response.success) {

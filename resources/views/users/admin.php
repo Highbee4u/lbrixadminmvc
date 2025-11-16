@@ -1,5 +1,4 @@
 <?php $pageTitle = 'Admin Users'; ?>
-<?php include __DIR__ . '/../partials/topnav.php'; ?>
 
 <div class="container-fluid py-4">
     <!-- Filter Bar Section -->

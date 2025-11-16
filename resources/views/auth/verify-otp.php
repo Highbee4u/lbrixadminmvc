@@ -38,7 +38,7 @@
                                     <strong><?php echo htmlspecialchars($email ?? Session::get('verify_email', '')); ?></strong>
                                 </div>
                                 
-                                <form role="form" method="POST" action="/verify-otp" id="verifyOtpForm">
+                                <form role="form" method="POST" action="<?php echo url('verify-otp'); ?>" id="verifyOtpForm">
                                     <input type="hidden" name="csrf_token" value="<?php echo Session::token(); ?>">
                                     
                                     <div class="flex flex-col mb-3">
@@ -63,14 +63,14 @@
                                 </form>
                                 
                                 <div class="text-center mt-3">
-                                    <a href="/forgot-password" class="text-sm text-muted">
+                                    <a href="<?php echo url('forgot-password'); ?>" class="text-sm text-muted">
                                         <i class="fa fa-redo me-1"></i> Didn't receive OTP? Request new one
                                     </a>
                                 </div>
                             </div>
                             <div class="card-footer text-center pt-0 px-lg-2 px-1">
                                 <p class="mb-1 text-sm mx-auto">
-                                    <a href="/login" class="text-primary text-gradient font-weight-bold">Back to Login</a>
+                                    <a href="<?php echo url('login'); ?>" class="text-primary text-gradient font-weight-bold">Back to Login</a>
                                 </p>
                             </div>
                         </div>

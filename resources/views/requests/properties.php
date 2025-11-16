@@ -1,5 +1,4 @@
 <?php $pageTitle = 'Property Requests'; ?>
-<?php include __DIR__ . '/../partials/topnav.php'; ?>
 
 <div class="container-fluid py-4">
     <div class="row">
@@ -19,7 +18,7 @@
                             <?php foreach ($properties['data'] as $property): ?>
                                 <!-- Property Request Card -->
                                 <div class="col-xl-3 col-md-6 mb-4">
-                                    <a href="/requests/property/view?id=<?php echo htmlspecialchars($property['itemrequestid'] ?? '', ENT_QUOTES); ?>" class="text-decoration-none">
+                                    <a href="<?php echo url('requests/properties/' . htmlspecialchars($property['itemrequestid'] ?? '', ENT_QUOTES)); ?>" class="text-decoration-none">
                                         <div class="card h-180 w-100 py-2 mb-3" style="background: url('/img/question.png'); height: 240px; background-size: cover; background-position: center;">
                                             <div class="card-body">
                                                 <div class="row no-gutters align-items-center">

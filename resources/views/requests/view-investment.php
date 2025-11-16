@@ -1,5 +1,4 @@
 <?php $pageTitle = 'Investment Request Detail'; ?>
-<?php include __DIR__ . '/../partials/topnav.php'; ?>
 
 <div class="container-fluid py-4">
     <div class="row">
@@ -11,6 +10,11 @@
                             <h3 class="mb-0">Investment Request Detail</h3>
                         </div>
                         <div class="col-4 text-end">
+                            <button type="button"
+                                    class="btn btn-sm btn-info text-white close-request-btn me-2 <?php echo (!empty($investment['itemid']) && $investment['requeststatus'] == 0) ? '' : 'disabled'; ?>"
+                                    data-itemrequestid="<?php echo htmlspecialchars($investment['itemrequestid'], ENT_QUOTES); ?>">
+                                Close Request
+                            </button>
                             <button type="button" onclick="window.history.back()" class="btn btn-sm btn-primary">Go Back</button>
                         </div>
                     </div>
@@ -22,9 +26,9 @@
                         
                         <!-- Investment Profile -->
                         <div class="card">
-                            <div class="card-header bg-dark" id="investmentInfo">
+                            <div class="card-header" id="investmentInfo">
                                 <h5 class="mb-0">
-                                    <button class="btn text-white w-100 text-left" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInvestmentInfo" aria-expanded="true" aria-controls="collapseInvestmentInfo">
+                                    <button class="btn w-100 text-left" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInvestmentInfo" aria-expanded="true" aria-controls="collapseInvestmentInfo">
                                         Profile
                                     </button>
                                 </h5>
@@ -62,9 +66,9 @@
 
                         <!-- Matching Properties Listings -->
                         <div class="card">
-                            <div class="card-header bg-dark" id="matchingInvestments">
+                            <div class="card-header" id="matchingInvestments">
                                 <h5 class="mb-0">
-                                    <button class="btn text-white w-100 text-left" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMatchingInvestments" aria-expanded="false" aria-controls="collapseMatchingInvestments">
+                                    <button class="btn w-100 text-left" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMatchingInvestments" aria-expanded="false" aria-controls="collapseMatchingInvestments">
                                         Matching Properties Listings
                                     </button>
                                 </h5>
@@ -72,8 +76,8 @@
                             <div id="collapseMatchingInvestments" class="collapse" aria-labelledby="matchingInvestments" data-bs-parent="#investmentAccordion">
                                 <div class="card-body">
                                     <div class="row">
-                                        <?php if (!empty($matchingItems) && count($matchingItems) > 0): ?>
-                                            <?php foreach ($matchingItems as $item): ?>
+                                        <?php if (!empty($matchingItems['data']) && count($matchingItems['data']) > 0): ?>
+                                            <?php foreach ($matchingItems['data'] as $item): ?>
                                                 <div class="col-lg-3 mb-3">
                                                     <a href="/investments/view-project?id=<?php echo htmlspecialchars($item['itemid'], ENT_QUOTES); ?>" class="w-100">
                                                         <div class="p-1">
@@ -105,14 +109,62 @@
                                             </div>
                                         <?php endif; ?>
                                     </div>
+
+                                    <!-- Pagination for matching items -->
+                                    <?php if ($matchingItems['last_page'] > 1): ?>
+                                        <div class="d-flex justify-content-center mt-4">
+                                            <nav aria-label="Matching items pagination">
+                                                <ul class="pagination">
+                                                    <!-- Previous button -->
+                                                    <?php if ($matchingItems['current_page'] > 1): ?>
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="<?php echo url('requests/investments/' . $investment['itemrequestid'] . '?page=' . ($matchingItems['current_page'] - 1)); ?>#collapseMatchingInvestments">
+                                                                <i class="fas fa-chevron-left"></i>
+                                                            </a>
+                                                        </li>
+                                                    <?php else: ?>
+                                                        <li class="page-item disabled">
+                                                            <span class="page-link"><i class="fas fa-chevron-left"></i></span>
+                                                        </li>
+                                                    <?php endif; ?>
+
+                                                    <!-- Page numbers -->
+                                                    <?php
+                                                    $start = max(1, $matchingItems['current_page'] - 2);
+                                                    $end = min($matchingItems['last_page'], $matchingItems['current_page'] + 2);
+
+                                                    for ($i = $start; $i <= $end; $i++):
+                                                    ?>
+                                                        <li class="page-item <?php echo $i == $matchingItems['current_page'] ? 'active' : ''; ?>">
+                                                            <a class="page-link" href="<?php echo url('requests/investments/' . $investment['itemrequestid'] . '?page=' . $i); ?>#collapseMatchingInvestments">
+                                                                <?php echo $i; ?>
+                                                            </a>
+                                                        </li>
+                                                    <?php endfor; ?>
+
+                                                    <!-- Next button -->
+                                                    <?php if ($matchingItems['current_page'] < $matchingItems['last_page']): ?>
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="<?php echo url('requests/investments/' . $investment['itemrequestid'] . '?page=' . ($matchingItems['current_page'] + 1)); ?>#collapseMatchingInvestments">
+                                                                <i class="fas fa-chevron-right"></i>
+                                                            </a>
+                                                        </li>
+                                                    <?php else: ?>
+                                                        <li class="page-item disabled">
+                                                            <span class="page-link"><i class="fas fa-chevron-right"></i></span>
+                                                        </li>
+                                                    <?php endif; ?>
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                        <div class="text-center mt-2">
+                                            <small class="text-muted">
+                                                Showing <?php echo count($matchingItems['data']); ?> of <?php echo $matchingItems['total']; ?> matching items
+                                                (Page <?php echo $matchingItems['current_page']; ?> of <?php echo $matchingItems['last_page']; ?>)
+                                            </small>
+                                        </div>
+                                    <?php endif; ?>
                                     
-                                    <div class="mt-4">
-                                        <button type="button" 
-                                                class="btn btn-info text-white close-request-btn <?php echo (!empty($investment['itemid']) && ($investment['requeststatus'] == 0)) ? '' : 'disabled'; ?>" 
-                                                data-itemrequestid="<?php echo htmlspecialchars($investment['itemrequestid'], ENT_QUOTES); ?>">
-                                            Close Request
-                                        </button>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -157,7 +209,7 @@ $(document).ready(function() {
             confirmButtonText: 'Yes, match it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = `/requests/investment/view?id=${itemrequestid}&confirmitem=${itemid}`;
+                window.location.href = `<?php echo url('requests/investments/'); ?>${itemrequestid}?confirmitem=${itemid}`;
             }
         });
     });
@@ -180,7 +232,7 @@ $(document).ready(function() {
             confirmButtonText: 'Yes, un-match it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = `/requests/investment/view?id=${itemrequestid}&cancelitem=${itemid}`;
+                window.location.href = `<?php echo url('requests/investments/'); ?>${itemrequestid}?cancelitem=${itemid}`;
             }
         });
     });
@@ -201,7 +253,7 @@ $(document).ready(function() {
             confirmButtonText: 'Yes, close it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = `/requests/investment/view?id=${itemrequestid}&requeststatus=1`;
+                window.location.href = `<?php echo url('requests/investments/'); ?>${itemrequestid}?requeststatus=1`;
             }
         });
     });

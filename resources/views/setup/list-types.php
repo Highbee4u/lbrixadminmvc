@@ -198,7 +198,7 @@ $(document).ready(function() {
         e.preventDefault();
         let id = $('#edit_listtypeid').val();
         $.ajax({
-            url: "/setup/list-types/" + encodeURIComponent(id),
+            url: "<?php echo url('setup/list-types'); ?>/" + encodeURIComponent(id),
             method: 'POST',
             data: $(this).serialize() + '&_method=PUT',
                         success: function(response) {
@@ -238,7 +238,7 @@ $(document).ready(function() {
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "/setup/list-types/" + encodeURIComponent(id),
+                    url: "<?php echo url('setup/list-types'); ?>/" + encodeURIComponent(id),
                     method: 'POST',
                     data: { _method: 'DELETE' },
                                         success: function(response) {

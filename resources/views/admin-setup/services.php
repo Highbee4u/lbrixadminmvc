@@ -111,7 +111,7 @@
                 <h5 class="modal-title" id="addServiceModalLabel">Add New Service</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="addServiceForm" method="POST" action="/admin/services/create">
+            <form id="addServiceForm" method="POST" action="<?php echo url('admin/services/create'); ?>">
                  <div class="modal-body">
                      <div class="mb-3">
                          <label for="code" class="form-label">Service Code</label>
@@ -229,30 +229,31 @@ $(document).ready(function() {
     $('#editServiceForm').on('submit', function(e) {
         e.preventDefault();
         let id = $('#edit_serviceid').val();
-        
+
         $.ajax({
-            url: '/admin/services/update/' + id,
+            url: '<?php echo url('admin/services/update'); ?>/' + id,
             method: 'POST',
             data: $(this).serialize(),
             success: function(response) {
                 if(response.success) {
-                    // Show success message (you can use toastr or alert)
-                    alert('Service updated successfully');
+                    toastr.success('Service updated successfully');
                     $('#editServiceModal').modal('hide');
-                    // Reload page to show updated data
-                    location.reload();
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    toastr.error(response.message || 'Failed to update service');
                 }
-                alert(response.message);
             },
             error: function(xhr) {
                 if (xhr.responseJSON && xhr.responseJSON.errors) {
                     let errors = xhr.responseJSON.errors;
                     Object.keys(errors).forEach(function(key) {
-                        alert(errors[key][0]);
+                        toastr.error(errors[key][0]);
                         $(`#edit_${key}`).addClass('is-invalid');
                     });
                 } else {
-                    alert('Error updating service');
+                    toastr.error('Error updating service');
                 }
             }
         });
@@ -263,52 +264,69 @@ $(document).ready(function() {
         e.preventDefault();
         let id = $(this).data('id');
         let title = $(this).data('title');
-        
-        // Show confirmation dialog
-        if (confirm('Are you sure you want to delete "' + title + '"? This action cannot be undone.')) {
-            $.ajax({
-                url: '/admin/services/delete/' + id,
-                method: 'POST',
-                data: {
-                    csrf_token: '<?php echo Session::token(); ?>'
-                },
-                success: function(response) {
-                    if(response.success) {
-                        alert('Service deleted successfully');
-                        location.reload();
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You want to delete "' + title + '"? This action cannot be undone.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '<?php echo url('admin/services/delete'); ?>/' + id,
+                    method: 'POST',
+                    data: {
+                        csrf_token: '<?php echo $_SESSION['csrf_token'] ?? ''; ?>'
+                    },
+                    success: function(response) {
+                        if(response.success) {
+                            toastr.success('Service deleted successfully');
+                            setTimeout(function() {
+                                location.reload();
+                            }, 1000);
+                        } else {
+                            toastr.error(response.message || 'Failed to delete service');
+                        }
+                    },
+                    error: function(xhr) {
+                        toastr.error('Error deleting service');
                     }
-                },
-                error: function(xhr) {
-                    alert('Error deleting service');
-                }
-            });
-        }
+                });
+            }
+        });
     });
 
     // Add Service Form Submission
     $('#addServiceForm').on('submit', function(e) {
         e.preventDefault();
-        
+
         $.ajax({
             url: $(this).attr('action'),
             method: 'POST',
             data: $(this).serialize(),
             success: function(response) {
                 if(response.success) {
-                    alert('Service added successfully');
+                    toastr.success('Service added successfully');
                     $('#addServiceModal').modal('hide');
-                    location.reload();
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    toastr.error(response.message || 'Failed to add service');
                 }
             },
             error: function(xhr) {
                 if (xhr.responseJSON && xhr.responseJSON.errors) {
                     let errors = xhr.responseJSON.errors;
                     Object.keys(errors).forEach(function(key) {
-                        alert(errors[key][0]);
+                        toastr.error(errors[key][0]);
                         $(`#${key}`).addClass('is-invalid');
                     });
                 } else {
-                    alert('Error adding service');
+                    toastr.error('Error adding service');
                 }
             }
         });

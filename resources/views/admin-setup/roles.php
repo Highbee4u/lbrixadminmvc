@@ -240,7 +240,7 @@
                 setLoadingState(button, true);
 
                 $.ajax({
-                    url: '/admin/roles/store',
+                    url: '<?php echo url('admin/roles/store'); ?>',
                     type: 'POST',
                     data: formData,
                     success: function(response) {
@@ -301,7 +301,7 @@
                 setLoadingState(button, true);
 
                 $.ajax({
-                    url: '/admin/roles/update/' + roleId,
+                    url: '<?php echo url('admin/roles/update'); ?>/' + roleId,
                     type: 'PUT',
                     data: formData,
                     success: function(response) {
@@ -340,7 +340,7 @@
 
                 if (confirm('Are you sure you want to delete this role? This action cannot be undone.')) {
                     $.ajax({
-                        url: '/admin/roles/destroy/' + roleId,
+                        url: '<?php echo url('admin/roles/destroy'); ?>/' + roleId,
                         type: 'DELETE',
                         data: {
                             _token: '<?php echo isset($_SESSION['csrf_token']) ? $_SESSION['csrf_token'] : ''; ?>'

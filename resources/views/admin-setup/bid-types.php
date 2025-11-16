@@ -163,7 +163,7 @@ $(document).ready(function() {
     $('#addBidTypeForm').on('submit', function(e) {
         e.preventDefault();
         $.ajax({
-            url: "/admin/bid-types",
+            url: "<?php echo url('admin/bid-types'); ?>",
             method: 'POST',
             data: $(this).serialize(),
             success: function(response) {
@@ -207,7 +207,7 @@ $(document).ready(function() {
         e.preventDefault();
         let id = $('#edit_bidtypeid').val();
         $.ajax({
-            url: "/admin/bid-types/" + id,
+            url: "<?php echo url('admin/bid-types'); ?>/" + id,
             method: 'PUT',
             data: $(this).serialize(),
             success: function(response) {
@@ -247,7 +247,7 @@ $(document).ready(function() {
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "/admin/bid-types/" + id,
+                    url: "<?php echo url('admin/bid-types'); ?>/" + id,
                     method: 'POST',
                     data: {_method: 'DELETE'},
                     success: function(response) {

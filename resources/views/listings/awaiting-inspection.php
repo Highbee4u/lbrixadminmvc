@@ -86,12 +86,12 @@
                                                     </button>
                                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionDropdown<?php echo htmlspecialchars($property['itemid'] ?? '', ENT_QUOTES); ?>">
                                                         <li>
-                                                            <a class="dropdown-item" href="<?php echo url('listings/property-detail/<?php echo htmlspecialchars($property['itemid'] ?? '', ENT_QUOTES); ?>">
+                                                            <a class="dropdown-item" href="<?php echo url('listings/property-detail/' . htmlspecialchars($property['itemid'] ?? '', ENT_QUOTES)); ?>">
                                                                 <i class="fas fa-eye me-2"></i>View
                                                             </a>
                                                         </li>
                                                         <li>
-                                                            <a class="dropdown-item" href="<?php echo url('listings/edit-property/<?php echo htmlspecialchars($property['itemid'] ?? '', ENT_QUOTES); ?>">
+                                                            <a class="dropdown-item" href="<?php echo url('listings/edit-property/' . htmlspecialchars($property['itemid'] ?? '', ENT_QUOTES)); ?>">
                                                                 <i class="fas fa-edit me-2"></i>Edit
                                                             </a>
                                                         </li>
@@ -223,7 +223,7 @@ document.addEventListener('click', function(e){
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`/listings/properties/${id}`, { method: 'DELETE' })
+                fetch(`<?php echo url('listings/properties/'); ?>${id}`, { method: 'DELETE' })
                     .then(r => r.json()).then(d => {
                         if (d.success) {
                             toastr.success(d.message || 'Property deleted successfully');
@@ -250,7 +250,7 @@ document.addEventListener('click', function(e){
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`/listings/properties/reject/${id}`, { method: 'POST' })
+                fetch(`<?php echo url('listings/properties/reject/'); ?>${id}`, { method: 'POST' })
                     .then(r => r.json()).then(d => {
                         if (d.success) {
                             toastr.success(d.message || 'Property rejected successfully');
@@ -287,7 +287,7 @@ if (createInspectionForm) {
     createInspectionForm.addEventListener('submit', function(e){
         e.preventDefault();
         const fd = new FormData(this);
-        fetch('/inspection/tasks/store', { method:'POST', body: fd })
+        fetch('<?php echo url('inspection/tasks/store'); ?>', { method:'POST', body: fd })
             .then(r=>r.json()).then(d=>{
                 if (d.success) {
                     bootstrap.Modal.getInstance(document.getElementById('createInspectionModal')).hide();

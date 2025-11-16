@@ -1,5 +1,5 @@
 <?php $pageTitle = 'Property Detail'; ?>
-<?php include __DIR__ . '/../partials/topnav.php'; ?>
+
 
 <div class="container-fluid py-4">
     <div class="row">

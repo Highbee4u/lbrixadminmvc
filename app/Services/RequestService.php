@@ -138,7 +138,7 @@ class RequestService {
             LEFT JOIN investoptions io ON ir.investoptionid = io.investoptionid
             LEFT JOIN states s ON ir.stateid = s.stateid
             LEFT JOIN countries c ON ir.countryid = c.countryid
-            WHERE ir.itemsrequestid = ?
+            WHERE ir.itemrequestid = ?
                 AND ir.companyid = ?
                 AND ir.isdeleted = ?
             LIMIT 1
@@ -173,7 +173,7 @@ class RequestService {
             LEFT JOIN investoptions io ON ir.investoptionid = io.investoptionid
             LEFT JOIN states s ON ir.stateid = s.stateid
             LEFT JOIN countries c ON ir.countryid = c.countryid
-            WHERE ir.itemsrequestid = ?
+            WHERE ir.itemrequestid = ?
                 AND ir.companyid = ?
                 AND ir.isdeleted = ?
             LIMIT 1
@@ -195,7 +195,7 @@ class RequestService {
                 'updatedate' => date('Y-m-d H:i:s')
             ],
             [
-                'itemsrequestid' => $itemrequestid,
+                'itemrequestid' => $itemrequestid,
                 'companyid' => $this->companyId,
                 'isdeleted' => self::NOT_DELETED
             ]
@@ -214,7 +214,7 @@ class RequestService {
                 'updatedate' => date('Y-m-d H:i:s')
             ],
             [
-                'itemsrequestid' => $itemrequestid,
+                'itemrequestid' => $itemrequestid,
                 'companyid' => $this->companyId,
                 'isdeleted' => self::NOT_DELETED,
                 'requeststatus' => 0
@@ -234,7 +234,7 @@ class RequestService {
                 'updatedate' => date('Y-m-d H:i:s')
             ],
             [
-                'itemsrequestid' => $itemrequestid,
+                'itemrequestid' => $itemrequestid,
                 'companyid' => $this->companyId,
                 'isdeleted' => self::NOT_DELETED,
                 'requeststatus' => 0
@@ -243,41 +243,53 @@ class RequestService {
     }
 
     /**
-     * Get matching items for a request based on servicetype
+     * Get matching items for a request based on servicetype with pagination
      */
-    public function getMatchingItems($itemrequestid) {
+    public function getMatchingItems($itemrequestid, $page = 1, $perPage = 12) {
         // Get the request details
         $request = $this->getPropertyRequestById($itemrequestid);
         if (!$request) {
             $request = $this->getInvestmentRequestById($itemrequestid);
         }
-        
+
         if (!$request) {
-            return [];
+            return [
+                'data' => [],
+                'total' => 0,
+                'per_page' => $perPage,
+                'current_page' => $page,
+                'last_page' => 0
+            ];
         }
 
-        // Get matching items based on servicetypeid
-        $sql = "
-            SELECT 
+        $conditions = [
+            'i.companyid = ?',
+            'i.isdeleted = ?',
+            'i.servicetypeid = ?'
+        ];
+        $params = [$this->companyId, self::NOT_DELETED, $request['servicetypeid']];
+
+        $baseSql = "
+            SELECT
                 i.itemid,
                 i.title,
                 i.price,
                 i.description,
                 i.address,
-                COALESCE(ip.picurl, 'images/No_image.png') as picurl
+                COALESCE(MIN(ip.picurl), 'images/No_image.png') as picurl
             FROM items i
             LEFT JOIN itempics ip ON i.itemid = ip.itemid
-            WHERE i.companyid = ?
-                AND i.isdeleted = ?
-                AND i.servicetypeid = ?
-            GROUP BY i.itemid
+            WHERE " . implode(' AND ', $conditions) . "
+            GROUP BY i.itemid, i.title, i.price, i.description, i.address
             ORDER BY i.entrydate DESC
         ";
 
-        return $this->db->select($sql, [
-            $this->companyId,
-            self::NOT_DELETED,
-            $request['servicetypeid']
-        ]);
+        $countSql = "
+            SELECT COUNT(DISTINCT i.itemid) as total
+            FROM items i
+            WHERE " . implode(' AND ', $conditions) . "
+        ";
+
+        return $this->paginate($baseSql, $countSql, $params, $page, $perPage);
     }
 }

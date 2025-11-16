@@ -34,8 +34,18 @@ class Router
      */
     public function dispatch($url)
     {
-        // Get the HTTP method
+        // Get the HTTP method, checking for method override header
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+
+        // Check for X-HTTP-Method-Override header (for AJAX requests)
+        if (isset($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'])) {
+            $method = strtoupper($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE']);
+        }
+
+        // Check for _method form parameter (for HTML form method spoofing)
+        if ($method === 'POST' && isset($_POST['_method'])) {
+            $method = strtoupper($_POST['_method']);
+        }
 
         // Clean the URL
         $url = '/' . trim($url, '/');
@@ -206,7 +216,7 @@ class Router
             return BASE_URL . 'index.php';
         }
 
-        return BASE_URL . 'index.php?action=' . $path;
+        return BASE_URL . 'index.php?url=' . $path;
     }
     
     /**
@@ -214,7 +224,7 @@ class Router
      */
     public static function currentUrl()
     {
-        return $_GET['action'] ?? '';
+        return $_GET['url'] ?? '';
     }
     
     /**

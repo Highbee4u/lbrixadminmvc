@@ -216,7 +216,7 @@ $(document).ready(function() {
         
         if(countryid) {
             $.ajax({
-                url: '/api/states/country/' + countryid,
+                url: '<?php echo url('api/states/country'); ?>/' + countryid,
                 method: 'GET',
                 success: function(response) {
                     if(response.success && response.states) {
@@ -249,7 +249,7 @@ $(document).ready(function() {
         
         if(countryid) {
             $.ajax({
-                url: '/api/states/country/' + countryid,
+                url: '<?php echo url('api/states/country'); ?>/' + countryid,
                 method: 'GET',
                 success: function(response) {
                     if(response.success && response.states) {
@@ -276,7 +276,7 @@ $(document).ready(function() {
     $('#addSublocationForm').on('submit', function(e) {
         e.preventDefault();
         $.ajax({
-            url: "/setup/sublocations",
+            url: "<?php echo url('setup/sublocations'); ?>",
             method: 'POST',
             data: $(this).serialize(),
                         success: function(response) {
@@ -347,7 +347,7 @@ $(document).ready(function() {
         e.preventDefault();
         let id = $('#edit_sublocationid').val();
         $.ajax({
-            url: "/setup/sublocations/" + id,
+            url: "<?php echo url('setup/sublocations'); ?>/" + id,
             method: 'POST',
             data: $(this).serialize(),
                         success: function(response) {
@@ -387,7 +387,7 @@ $(document).ready(function() {
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "/setup/sublocations/" + id,
+                    url: "<?php echo url('setup/sublocations'); ?>/" + id,
                     method: 'DELETE',
                                         success: function(response) {
                         if(response.success) {

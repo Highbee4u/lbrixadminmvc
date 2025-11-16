@@ -25,7 +25,7 @@ $pageTitle = 'Change Password';
                         </div>
                     <?php endif; ?>
                     
-                    <form role="form" method="POST" action="/change-password" id="changePasswordForm">
+                    <form role="form" method="POST" action="<?php echo url('change-password'); ?>" id="changePasswordForm">
                         <input type="hidden" name="csrf_token" value="<?php echo Session::token(); ?>">
                         
                         <div class="row">
@@ -93,7 +93,7 @@ $pageTitle = 'Change Password';
                         </div>
                         
                         <div class="d-flex justify-content-between">
-                            <a href="/dashboard" class="btn btn-light">Cancel</a>
+                            <a href="<?php echo url('dashboard'); ?>" class="btn btn-light">Cancel</a>
                             <button type="submit" class="btn btn-primary">Change Password</button>
                         </div>
                     </form>

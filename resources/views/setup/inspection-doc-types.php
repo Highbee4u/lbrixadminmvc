@@ -196,7 +196,7 @@ $(document).ready(function() {
         e.preventDefault();
         let id = $('#edit_itemdoctypeid').val();
         $.ajax({
-            url: "/setup/inspection-doc-types/" + encodeURIComponent(id),
+            url: "<?php echo url('setup/inspection-doc-types'); ?>/" + encodeURIComponent(id),
             method: 'POST',
             data: $(this).serialize() + '&_method=PUT',
                         success: function(response) {
@@ -236,7 +236,7 @@ $(document).ready(function() {
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "/setup/inspection-doc-types/" + encodeURIComponent(id),
+                    url: "<?php echo url('setup/inspection-doc-types'); ?>/" + encodeURIComponent(id),
                     method: 'POST',
                     data: { _method: 'DELETE' },
                                         success: function(response) {

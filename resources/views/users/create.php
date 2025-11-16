@@ -1,7 +1,6 @@
 <?php 
 $pageTitle = 'Create New ' . ucfirst($userType ?? 'Customer'); 
 ?>
-<?php include __DIR__ . '/../partials/topnav.php'; ?>
 
 <div class="container-fluid py-4">
     <div class="row">

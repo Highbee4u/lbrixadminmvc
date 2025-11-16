@@ -1,5 +1,4 @@
 <?php $pageTitle = 'Investment Requests'; ?>
-<?php include __DIR__ . '/../partials/topnav.php'; ?>
 
 <div class="container-fluid py-4">
     <div class="row">
@@ -19,7 +18,7 @@
                             <?php foreach ($investments['data'] as $investment): ?>
                                 <!-- Investment Request Card -->
                                 <div class="col-xl-3 col-md-6 mb-4">
-                                    <a href="/requests/investment/view?id=<?php echo htmlspecialchars($investment['itemrequestid'] ?? '', ENT_QUOTES); ?>" class="text-decoration-none">
+                                    <a href="<?php echo url('requests/investments/' . htmlspecialchars($investment['itemrequestid'] ?? '', ENT_QUOTES)); ?>" class="text-decoration-none">
                                         <div class="card h-180 w-100 py-2 mb-3" style="background: url('/img/No_image.png'); height: 240px; background-size: cover; background-position: center;">
                                             <div class="card-body">
                                                 <div class="row no-gutters align-items-center">

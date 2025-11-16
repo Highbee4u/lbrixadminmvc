@@ -191,7 +191,7 @@
         $('#addItemServiceForm').on('submit', function(e) {
             e.preventDefault();
             $.ajax({
-                url: "/admin/item-services/store",
+                url: "<?php echo url('admin/item-services/store'); ?>",
                 method: 'POST',
                 data: $(this).serialize(),
                 success: function(response) {
@@ -239,7 +239,7 @@
             let csrfToken = $('input[name="csrf_token"]').val();
 
             $.ajax({
-                url: "/admin/item-services/" + id,
+                url: "<?php echo url('admin/item-services'); ?>/" + id,
                 method: 'PUT',
                 data: {
                     itemserviceid: id,
@@ -285,7 +285,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: "/admin/item-services/" + id,
+                        url: "<?php echo url('admin/item-services'); ?>/" + id,
                         method: 'DELETE',
                         data: {
                             csrf_token: "<?php echo $_SESSION['csrf_token'] ?? ''; ?>"

@@ -15,7 +15,7 @@ class ChangePasswordController extends Controller {
             return;
         }
 
-        $this->view('auth/change-password', ['title' => 'Change Password']);
+        $this->viewWithLayout('auth/change-password', ['title' => 'Change Password']);
     }
 
     /**
@@ -24,7 +24,7 @@ class ChangePasswordController extends Controller {
     public function update() {
         // Check if user is authenticated
         if (!Auth::check()) {
-            Response::redirect('/login');
+            Response::redirect(url('login'));
             return;
         }
 
@@ -89,7 +89,7 @@ class ChangePasswordController extends Controller {
             Session::flash('errors', [
                 'general' => ['Failed to update password. Please try again.']
             ]);
-            Response::redirect('/change-password');
+            Response::redirect(url('change-password'));
             return;
         }
 
@@ -101,7 +101,7 @@ class ChangePasswordController extends Controller {
 
         // Show success message with SweetAlert and redirect to login
         Session::flash('password_changed', true);
-        Response::redirect('/login');
+        Response::redirect(url('login'));
     }
 
     /**

@@ -26,7 +26,7 @@
                                     </div>
                                 <?php endif; ?>
                                 
-                                <form role="form" method="POST" action="/reset-password" id="resetPasswordForm">
+                                <form role="form" method="POST" action="<?php echo url('reset-password'); ?>" id="resetPasswordForm">
                                     <input type="hidden" name="csrf_token" value="<?php echo Session::token(); ?>">
                                     <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
                                     
@@ -75,7 +75,7 @@
                             </div>
                             <div class="card-footer text-center pt-0 px-lg-2 px-1">
                                 <p class="mb-1 text-sm mx-auto">
-                                    <a href="/login" class="text-primary text-gradient font-weight-bold">Back to Login</a>
+                                    <a href="<?php echo url('login'); ?>" class="text-primary text-gradient font-weight-bold">Back to Login</a>
                                 </p>
                             </div>
                         </div>

@@ -138,7 +138,7 @@ $(document).ready(function() {
         data.push({ name: '_method', value: 'PUT' });
 
         $.ajax({
-            url: "/setup/item-types/" + encodeURIComponent(id),
+            url: "<?php echo url('setup/item-types'); ?>/" + encodeURIComponent(id),
             method: 'POST',
             data: $.param(data),
                         success: function(response) {
@@ -182,10 +182,10 @@ $(document).ready(function() {
                     return;
                 }
                 $.ajax({
-                    url: "/setup/item-types/" + encodeURIComponent(id),
+                    url: "<?php echo url('setup/item-types'); ?>/" + encodeURIComponent(id),
                     method: 'POST',
                     data: { _method: 'DELETE' },
-                                        success: function(response) {
+                    success: function(response) {
                         if(response.success) {
                             toastr.success('Item type deleted successfully');
                             setTimeout(function() {
@@ -249,7 +249,7 @@ $(document).ready(function() {
         e.preventDefault();
         let id = $('#edit_itemserviceid').val();
         $.ajax({
-            url: "/setup/item-service-types/" + encodeURIComponent(id),
+            url: "<?php echo url('setup/item-service-types'); ?>/" + encodeURIComponent(id),
             method: 'POST',
             data: $(this).serialize() + '&_method=PUT',
                         success: function(response) {
@@ -290,8 +290,9 @@ $(document).ready(function() {
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "/setup/item-service-types/" + encodeURIComponent(id),
-                    method: 'DELETE',
+                    url: "<?php echo url('setup/item-service-types'); ?>/" + encodeURIComponent(id),
+                    method: 'POST',
+                    data: { _method: 'DELETE' },
                     success: function(response) {
                         if(response.success) {
                             toastr.success('Item service type deleted successfully');
@@ -357,7 +358,7 @@ $(document).ready(function() {
         
         // Fetch actual data
         $.ajax({
-            url: '/api/item-profile-options/' + encodeURIComponent(id),
+            url: '<?php echo url('api/item-profile-options'); ?>/' + encodeURIComponent(id),
             method: 'GET',
             success: function(response) {
                 if(response.success && response.data) {
@@ -437,7 +438,7 @@ $(document).ready(function() {
         e.preventDefault();
         let id = $('#edit_itemprofileoptionid').val();
         $.ajax({
-            url: "/setup/item-profile-options/" + encodeURIComponent(id),
+            url: "<?php echo url('setup/item-profile-options'); ?>/" + encodeURIComponent(id),
             method: 'POST',
             data: $(this).serialize() + '&_method=PUT',
                         success: function(response) {
@@ -477,8 +478,9 @@ $(document).ready(function() {
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "/setup/item-profile-options/" + encodeURIComponent(id),
-                    method: 'DELETE',
+                    url: "<?php echo url('setup/item-profile-options'); ?>/" + encodeURIComponent(id),
+                    method: 'POST',
+                    data: { _method: 'DELETE' },
                     success: function(response) {
                         if(response.success) {
                             toastr.success('Item profile option deleted successfully');
