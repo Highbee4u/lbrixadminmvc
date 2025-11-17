@@ -5,15 +5,15 @@ class Database {
 
     private function __construct() {
         try {
-            $host = Config::get('database.host', 'localhost');
-            $dbname = Config::get('database.database', 'lbrixtest');
-            $username = Config::get('database.username', 'root');
-            $password = Config::get('database.password', '');
-
             // $host = Config::get('database.host', 'localhost');
-            // $dbname = Config::get('database.database', 'oyesoft_lbrixdata');
+            // $dbname = Config::get('database.database', 'lbrixtest');
             // $username = Config::get('database.username', 'root');
             // $password = Config::get('database.password', '');
+
+            $host = Config::get('database.host', 'localhost');
+            $dbname = Config::get('database.database', 'oyesoft_lbrixdata');
+            $username = Config::get('database.username', 'root');
+            $password = Config::get('database.password', '');
             
             $this->connection = new PDO(
                 "mysql:host={$host};dbname={$dbname}",

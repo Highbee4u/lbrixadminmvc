@@ -6,7 +6,7 @@
 $config = [
     'app' => [
         'name' => 'Lbrix Admin',
-        'env' => 'development', // development, production
+        'env' => 'production', // development, production
         'debug' => true,
         'timezone' => 'UTC',
     ],
