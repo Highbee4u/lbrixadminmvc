@@ -1,4 +1,4 @@
-<?php $pageTitle = 'Awaiting Projects'; ?>
+<?php $pageTitle = 'Awaiting Inspection Projects'; ?>
 
 <div class="container-fluid py-4">
     <!-- Filter Bar Section -->
@@ -7,7 +7,7 @@
             <div class="card">
                 <div class="card-body">
                     <h6 class="card-title mb-3">
-                        <i class="fas fa-filter me-2"></i>Filter Awaiting Projects
+                        <i class="fas fa-filter me-2"></i>Filter Awaiting Inspection Projects
                     </h6>
                     <div class="row g-3 align-items-end">
                         <div class="col-lg-4 col-md-6">
@@ -55,8 +55,8 @@
             <div class="card mb-4">
                 <div class="card-header pb-0">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h6>Awaiting Projects</h6>
-                        <a href="/investments/add-project" class="btn btn-success">
+                        <h6>Awaiting Inspection Projects</h6>
+                        <a href="<?php echo url('investments/add-project'); ?>" class="btn btn-success">
                             <i class="fas fa-plus me-2"></i>Add Project
                         </a>
                     </div>
@@ -90,12 +90,12 @@
                                                     </button>
                                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionDropdown<?php echo htmlspecialchars($project['itemid'] ?? '', ENT_QUOTES); ?>">
                                                         <li>
-                                                            <a class="dropdown-item" href="/investments/view-project?id=<?php echo htmlspecialchars($project['itemid'] ?? '', ENT_QUOTES); ?>">
+                                                            <a class="dropdown-item" href="<?php echo url('investments/view-project/' . htmlspecialchars($project['itemid'] ?? '', ENT_QUOTES)); ?>">
                                                                 <i class="fas fa-eye me-2"></i>View
                                                             </a>
                                                         </li>
                                                         <li>
-                                                            <a class="dropdown-item" href="/investments/edit-project?id=<?php echo htmlspecialchars($project['itemid'] ?? '', ENT_QUOTES); ?>">
+                                                            <a class="dropdown-item" href="<?php echo url('investments/edit-project/' . htmlspecialchars($project['itemid'] ?? '', ENT_QUOTES)); ?>">
                                                                 <i class="fas fa-edit me-2"></i>Edit
                                                             </a>
                                                         </li>
@@ -178,7 +178,7 @@
                                 <?php else: ?>
                                     <tr>
                                         <td colspan="10" class="text-center py-4">
-                                            <p class="text-sm text-secondary mb-0">No Awaiting projects found</p>
+                                            <p class="text-sm text-secondary mb-0">No Awaiting Inspection Projects found</p>
                                         </td>
                                     </tr>
                                 <?php endif; ?>
@@ -219,13 +219,17 @@
             const ed = document.getElementById('filter_entry_date').value;
             if (ot) params.append('ownership_type', ot);
             if (ed) params.append('entry_date', ed);
-            window.location.href = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+            window.location.href = (() => {
+                const baseUrl = '<?php echo url("investments/awaiting-inspection"); ?>';
+                const queryString = params.toString();
+                return baseUrl + (queryString ? '&' + queryString : '');
+            })();
         });
     }
     const resetBtn = document.getElementById('resetFilters');
     if (resetBtn) {
         resetBtn.addEventListener('click', function(){
-            window.location.href = window.location.pathname;
+            window.location.href = '<?php echo url("investments/awaiting-inspection"); ?>';
         });
     }
 })();
@@ -262,7 +266,7 @@ document.addEventListener('click', function(e){
                 const formData = new FormData();
                 formData.append('itemstatusid', '2');
                 
-                fetch(`/investments/projects/update/${itemid}`, { 
+                fetch(`'<?php echo url('investments/projects/update/') . $itemid; ?>`, { 
                     method: 'POST',
                     body: formData
                 })
@@ -271,7 +275,7 @@ document.addEventListener('click', function(e){
                     if (ok && data.success) {
                         toastr.success('Redirecting to create inspection task...');
                         setTimeout(() => {
-                            window.location.href = `/inspection/tasks?itemid=${itemid}&itemstatusid=2`;
+                            window.location.href = `<?php echo url('inspection/tasks'); ?>?itemid=${itemid}&itemstatusid=2`;
                         }, 1000);
                     } else {
                         toastr.error(data.message || 'Failed to update project status');

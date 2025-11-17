@@ -212,7 +212,9 @@ return [
     'GET /investments/closed' => 'InvestmentsController@closed',
     'GET /investments/add-project' => 'InvestmentsController@addProject',
     'GET /investments/edit-project' => 'InvestmentsController@editProject',
-    'GET /investments/view-project' => 'InvestmentsController@viewProject',
+    'GET /investments/edit-project/:id' => 'InvestmentsController@editProject',
+    'GET /investments/view-project/:id' => 'InvestmentsController@viewProject',
+    'GET /investments/project-detail/:id' => 'InvestmentsController@viewProject',
     'POST /investments/projects/store' => 'InvestmentsController@storeProject',
     'POST /investments/projects/update-info' => 'InvestmentsController@updateProjectInfo',
     'POST /investments/projects/update/:id' => 'InvestmentsController@updateProject',
@@ -262,8 +264,9 @@ return [
     'GET /users/inspectors' => 'UsersController@inspectors',
     'GET /users/admin' => 'UsersController@admin',
     'GET /users/create' => 'UsersController@create',
-    'GET /users/edit' => 'UsersController@edit',
+    'GET /users/edit/:id' => 'UsersController@edit',
     'POST /users/store' => 'UsersController@store',
     'POST /users/update/:id' => 'UsersController@update',
     'POST /users/quick-update/:id' => 'UsersController@updateUser',
 ];
+

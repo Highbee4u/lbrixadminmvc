@@ -37,7 +37,13 @@ define('ASSETS_URL', BASE_URL . 'assets/');
 
 // Load configuration
 require_once CONFIG_DIR . '/database.php';
-require_once CONFIG_DIR . '/app.php';
+$config = require_once CONFIG_DIR . '/app.php';
+
+// Update URL config values dynamically
+if (isset($config['url'])) {
+    $config['url']['base_url'] = BASE_URL;
+    $config['url']['assets_url'] = ASSETS_URL;
+}
 
 // Autoload core classes
 spl_autoload_register(function ($class) {
@@ -64,7 +70,8 @@ $coreFiles = [
     'View.php',
     'Model.php',
     'Controller.php',
-    'Router.php'
+    'Router.php',
+    'upload_helpers.php'
 ];
 
 foreach ($coreFiles as $file) {
@@ -87,6 +94,10 @@ if (file_exists(APP_DIR . '/Models/BaseModel.php')) {
 // Load traits
 if (file_exists(APP_DIR . '/Traits/AuditFields.php')) {
     require_once APP_DIR . '/Traits/AuditFields.php';
+}
+
+if (file_exists(APP_DIR . '/Traits/HasFileUpload.php')) {
+    require_once APP_DIR . '/Traits/HasFileUpload.php';
 }
 
 // Initialize the router

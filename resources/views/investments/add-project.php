@@ -1,6 +1,5 @@
 <?php $pageTitle = isset($project) ? 'Edit Project' : 'Add New Project'; ?>
 
-
 <div class="container-fluid py-4">
     <div class="row">
         <div class="col-12">
@@ -8,7 +7,7 @@
                 <div class="card-header pb-0">
                     <div class="d-flex justify-content-between align-items-center">
                         <h6><?php echo isset($project) ? 'Edit Investment Project' : 'Add New Investment Project'; ?></h6>
-                        <a href="/investments/new-projects" class="btn btn-sm btn-secondary">
+                        <a href="javascript:history.back()" class="btn btn-sm btn-secondary">
                             <i class="fas fa-arrow-left me-2"></i>Back to Projects
                         </a>
                     </div>
@@ -590,7 +589,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 form.itemid.value = currentItemId;
             }
             const formData = new FormData(form);
-            fetch('/investments/projects/docs', {
+            fetch('<?php echo url('investments/projects/docs'); ?>', {
                 method: 'POST',
                 body: formData
             })
@@ -668,7 +667,7 @@ document.getElementById('saveProjectInfo').addEventListener('click', function() 
         description: formData.get('description')
     });
 
-    fetch('/investments/projects/store', {
+    fetch('<?php echo url('investments/projects/store'); ?>', {
         method: 'POST',
         body: formData
     })
@@ -707,7 +706,7 @@ function loadProfileOptions() {
     const query = itemTypeId ? ('itemtypeid=' + encodeURIComponent(itemTypeId)) : (currentItemId ? ('itemid=' + encodeURIComponent(currentItemId)) : '');
     if (!query) return;
 
-    fetch('/investments/profile-options?' + query)
+    fetch('<?php echo url('investments/profile-options'); ?>/' + query)
     .then(r => r.json())
     .then(response => {
         if (response.success) {
@@ -761,7 +760,7 @@ document.getElementById('saveProjectDocument').addEventListener('click', functio
 
     const formData = new FormData(form);
 
-    fetch('/investments/projects/docs', {
+    fetch('<?php echo url('investments/projects/docs'); ?>', {
         method: 'POST',
         body: formData
     })
@@ -802,7 +801,7 @@ document.getElementById('saveProjectImage').addEventListener('click', function()
 
     const formData = new FormData(form);
 
-    fetch('/investments/projects/pics', {
+    fetch('<?php echo url('investments/projects/pics'); ?>', {
         method: 'POST',
         body: formData
     })
@@ -843,7 +842,7 @@ document.getElementById('completeProject').addEventListener('click', function() 
 
     const formData = new FormData(form);
 
-    fetch('/investments/projects/layout', {
+    fetch('<?php echo url('investments/projects/layout'); ?>', {
         method: 'POST',
         body: formData
     })

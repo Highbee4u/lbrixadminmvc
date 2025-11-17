@@ -1,5 +1,4 @@
 <?php $pageTitle = 'Edit Project'; ?>
-<?php include __DIR__ . '/../partials/topnav.php'; ?>
 
 <div class="container-fluid py-4">
     <div class="row">
@@ -557,7 +556,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Documents and images are now handled by modals - no inline form handlers needed
 });
 
 function initializeValidation() {
@@ -611,7 +609,7 @@ document.getElementById('saveProjectInfo').addEventListener('click', function() 
         allFormData: Array.from(formData.entries())
     });
 
-    fetch('/investments/projects/update-info', {
+    fetch('<?php echo url('investments/projects/update-info'); ?>', {
         method: 'POST',
         body: formData
     })
@@ -638,7 +636,7 @@ function loadProfileOptions() {
     const query = itemTypeId ? ('itemtypeid=' + encodeURIComponent(itemTypeId)) : (currentItemId ? ('itemid=' + encodeURIComponent(currentItemId)) : '');
     if (!query) return;
 
-    fetch('/investments/profile-options?' + query)
+    fetch('<?php echo url('investments/profile-options'); ?>?' + query)
     .then(r => r.json())
     .then(response => {
         if (response.success) {
@@ -688,9 +686,10 @@ if (saveProfileBtn) {
 function loadInspections() {
     if (!currentItemId) return;
     
-    fetch(`/investments/projects/${currentItemId}/inspections`)
+    fetch(`<?php echo url("investments/projects/"); ?>${currentItemId}/inspections`)
         .then(r => r.json())
         .then(response => {
+            console.log('Inspections data response:', response);
             const tbody = document.getElementById('inspectionsTableBody');
             if (response.success && response.inspections && response.inspections.length > 0) {
                 tbody.innerHTML = response.inspections.map(inspection => `
@@ -775,7 +774,9 @@ function openDocumentModal(docId = null) {
     if (docId) {
         modalTitle.textContent = 'Edit Document';
         // Load document data via AJAX
-        fetch(`/investments/projects/documents/${docId}`)
+            fetch(`<?php echo url("investments/projects/documents/"); ?>${docId}`, {
+                method: 'GET',
+            })
             .then(r => r.json())
             .then(response => {
                 console.log('Document data response:', response);
@@ -815,8 +816,8 @@ function saveDocument() {
     formData.append('itemid', itemId);
 
     const url = editingDocumentId
-        ? `/investments/projects/documents/${editingDocumentId}/update`
-        : '/investments/projects/documents/store';
+        ? `<?php echo url("investments/projects/documents/"); ?>${editingDocumentId}/update`
+        : '<?php echo url("investments/projects/documents/store"); ?>';
 
     fetch(url, {
         method: 'POST',
@@ -865,7 +866,7 @@ function deleteDocument(docId) {
     }).then((result) => {
         if (result.isConfirmed) {
             console.log('Deleting document ID:', docId);
-            fetch(`/investments/projects/documents/${docId}/delete`, {
+            fetch(`<?php echo url("investments/projects/documents/")?>${docId}/delete`, {
                 method: 'POST',
                 body: JSON.stringify({ _method: 'DELETE' })
             })
@@ -890,7 +891,7 @@ function deleteDocument(docId) {
 
 function loadDocuments() {
     const itemId = document.getElementById('itemid').value;
-    fetch(`/investments/projects/${itemId}/documents`, {
+    fetch(`<?php echo url("investments/projects/");?>${itemId}/documents`, {
         method: 'GET',
     })
         .then(r => {
@@ -911,7 +912,7 @@ function loadDocuments() {
                         row.innerHTML = `
                             <td>${doc.itemDocTypeTitle || 'Document'}</td>
                             <td>
-                                ${doc.docurl ? `<a href="/documents/${doc.docurl}" target="_blank"><i class="fas fa-file-alt me-1"></i>${doc.docurl.split('/').pop()}</a>` : '<span class="text-muted">No file</span>'}
+                                ${doc.docurl ? `<a href="<?php echo asset('documents/'); ?>${doc.docurl}" target="_blank"><i class="fas fa-file-alt me-1"></i>${doc.docurl.split('/').pop()}</a>` : '<span class="text-muted">No file</span>'}
                             </td>
                             <td>
                                 <span class="badge ${doc.docstatus ? 'bg-success' : 'bg-secondary'}">
@@ -951,7 +952,7 @@ function loadDocuments() {
                 <form id="documentForm">
                     <div class="form-group mb-3">
                         <label for="doc_itemdoctypeid" class="form-label fw-bold">Document Type *</label>
-                        <select class="form-select" id="doc_itemdoctypeid" name="itemdoctypeid" required>
+                        <select class="form-select" id="doc_itemdoctypeid" name="itemdoctypeid" required onchange="updateDocTitle()">
                             <option value="">Select Document Type</option>
                             <?php foreach (($itemDocTypes ?? []) as $type): ?>
                                 <option value="<?php echo htmlspecialchars($type['itemdoctypeid'] ?? '', ENT_QUOTES); ?>">
@@ -960,6 +961,9 @@ function loadDocuments() {
                             <?php endforeach; ?>
                         </select>
                     </div>
+                    
+                    <!-- Hidden field for document title -->
+                    <input type="hidden" id="doc_itemdoctitle" name="itemdoctitle">
                     
                     <div class="form-group mb-3">
                         <label for="doc_docstatus" class="form-label fw-bold">Visible to Users</label>
@@ -984,6 +988,7 @@ function loadDocuments() {
     </div>
 </div>
 
+
 <!-- Image Modal -->
 <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -994,6 +999,17 @@ function loadDocuments() {
             </div>
             <div class="modal-body">
                 <form id="imageForm">
+                    <div class="form-group mb-3">
+                        <label for="doc_itempictypeid" class="form-label fw-bold">Project Image Type *</label>
+                        <select class="form-select" id="doc_itempictypeid" name="pictitleid" required onchange="updatePicTitle()">
+                            <option value="">Select Project Image Type</option>
+                            <?php foreach (($itempicTypes ?? []) as $type): ?>
+                                <option value="<?php echo htmlspecialchars($type['itempictypeid'] ?? '', ENT_QUOTES); ?>">
+                                    <?php echo htmlspecialchars($type['title'] ?? '', ENT_QUOTES); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
                     <div class="form-group mb-3">
                         <label for="img_pictitle" class="form-label fw-bold">Image Title</label>
                         <input type="text" class="form-control" id="img_pictitle" name="pictitle" placeholder="Enter image title">
@@ -1025,6 +1041,8 @@ function loadDocuments() {
 <script>
 // ==================== IMAGE MANAGEMENT ====================
 
+const imagesBaseUrl = "<?php echo url('investments/projects/images/'); ?>";
+
 function openImageModal(picId = null) {
     editingImageId = picId;
     const modal = document.getElementById('imageModal');
@@ -1036,8 +1054,7 @@ function openImageModal(picId = null) {
     
     if (picId) {
         modalTitle.textContent = 'Edit Image';
-        // Load image data via AJAX
-        fetch(`/investments/projects/images/${picId}`)
+        fetch(`${imagesBaseUrl}${picId}`)
             .then(r => r.json())
             .then(response => {
                 if (response.success) {
@@ -1065,8 +1082,8 @@ function saveImage() {
     formData.append('itemid', itemId);
 
     const url = editingImageId
-        ? `/investments/projects/images/${editingImageId}/update`
-        : '/investments/projects/images/store';
+        ? `<?php echo url('investments/projects/images/'); ?>${editingImageId}/update`
+        : '<?php echo url('investments/projects/images/store'); ?>';
 
     fetch(url, {
         method: 'POST',
@@ -1113,7 +1130,7 @@ function deleteImage(picId) {
     }).then((result) => {
         if (result.isConfirmed) {
             const itemId = document.getElementById('itemid').value;
-            fetch(`/investments/projects/images/${picId}/delete`, {
+            fetch(`<?php echo url('investments/projects/images/'); ?>${picId}/delete`, {
                 method: 'POST',
                 body: JSON.stringify({
                     itemid: itemId,
@@ -1144,7 +1161,8 @@ function deleteImage(picId) {
 
 function loadImages() {
     const itemId = document.getElementById('itemid').value;
-    fetch(`/investments/projects/${itemId}/images`, {
+
+    fetch(`<?php echo url('investments/projects/'); ?>${itemId}/images`, {
         method: 'GET',
     })
         .then(r => {
@@ -1191,5 +1209,26 @@ function loadImages() {
         })
         .catch(error => console.error('Error loading images:', error));
 }
+
+
+
+function updateDocTitle() {
+    const select = document.getElementById('doc_itemdoctypeid');
+    const img_pictitle = document.getElementById('doc_itemdoctitle');
+    const selectedText = select.options[select.selectedIndex].text;
+    
+    // Update hidden field (empty if "Select Document Type" is chosen)
+    hiddenInput.value = select.value ? selectedText : '';
+}
+
+function updatePicTitle() {
+    const select = document.getElementById('doc_itempictypeid');
+    const imgpictitle = document.getElementById('img_pictitle');
+    const selectedText = select.options[select.selectedIndex].text;
+    
+    // Update hidden field (empty if "Select Document Type" is chosen)
+    imgpictitle.value = select.value ? selectedText : '';
+}
+
 </script>
 

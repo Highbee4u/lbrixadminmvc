@@ -13,7 +13,7 @@ $pageTitle = (isset($user) ? 'Edit' : 'Create New') . ' ' . ucfirst($userType ??
                         $listPath = ($userType ?? 'customer') === 'admin' ? '/users/admin' : '/users/' . ($userType ?? 'customer') . 's';
                         $listLabel = ($userType ?? 'customer') === 'admin' ? 'Admin Users' : ucfirst($userType ?? 'Customer') . 's';
                         ?>
-                        <a href="<?php echo $listPath; ?>" class="btn btn-sm btn-secondary">Back to <?php echo $listLabel; ?></a>
+                        <a href="javascript:history.back()" class="btn btn-sm btn-secondary">Back to <?php echo $listLabel; ?></a>
                     </div>
                 </div>
 
@@ -30,10 +30,15 @@ $pageTitle = (isset($user) ? 'Edit' : 'Create New') . ' ' . ucfirst($userType ??
                             <?php echo htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
+                    <?php if (isset($_SESSION['success'])): ?>
+                        <script>
+                            toastr.success('<?php echo addslashes($_SESSION['success']); ?>');
+                        </script>
+                        <?php unset($_SESSION['success']); ?>
+                    <?php endif; ?>
                     <?php endif; ?>
 
-                    <form action="/users/update/<?php echo $user['userid']; ?>" method="POST" id="userForm">
-                        <input type="hidden" name="user_type" value="<?php echo htmlspecialchars($userType ?? 'customer'); ?>">
+                    <form action='<?php echo url("users/update/{$user['userid']}"); ?>' method="POST" id="userForm">                        <input type="hidden" name="user_type" value="<?php echo htmlspecialchars($userType ?? 'customer'); ?>">
 
                         <!-- Nav tabs -->
                         <ul class="nav nav-tabs" id="userTabs" role="tablist">
@@ -75,13 +80,7 @@ $pageTitle = (isset($user) ? 'Edit' : 'Create New') . ' ' . ucfirst($userType ??
 
                                 <?php if ($userType == 'attorney'): ?>
                                 <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="otherusertype" class="form-control-label">Attorney Type</label>
-                                            <input type="text" name="otherusertype" id="otherusertype" class="form-control" value="<?php echo htmlspecialchars($user['otherusertype'] ?? '', ENT_QUOTES); ?>">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="registrationnumber" class="form-control-label">Registration Number</label>
                                             <input type="text" name="registrationnumber" id="registrationnumber" class="form-control" value="<?php echo htmlspecialchars($user['registrationnumber'] ?? '', ENT_QUOTES); ?>">
@@ -248,16 +247,12 @@ $pageTitle = (isset($user) ? 'Edit' : 'Create New') . ' ' . ucfirst($userType ??
                                 </div>
                             </div>
                         </div>
-
                         <div class="row mt-4">
                             <div class="col-12">
                                 <button type="submit" class="btn btn-primary">
                                     <?php echo isset($user) ? 'Update' : 'Create'; ?> <?php echo ucfirst($userType ?? 'Customer'); ?>
                                 </button>
-                                <?php 
-                                $cancelPath = ($userType ?? 'customer') === 'admin' ? '/users/admin' : '/users/' . ($userType ?? 'customer') . 's';
-                                ?>
-                                <a href="<?php echo $cancelPath; ?>" class="btn btn-secondary">Cancel</a>
+                                <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
                             </div>
                         </div>
                     </form>

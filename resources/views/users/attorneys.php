@@ -53,7 +53,7 @@
                 <div class="card-header pb-0">
                     <div class="d-flex justify-content-between align-items-center">
                         <h6 class="mb-0">Attorneys</h6>
-                        <a href="/users/create?type=attorney" class="btn btn-sm btn-primary">
+                        <a href="<?php echo ("users/create&type=attorney")?>" class="btn btn-sm btn-primary">
                             <i class="fas fa-plus me-1"></i>Add New Attorney
                         </a>
                     </div>
@@ -87,7 +87,7 @@
                                                     </button>
                                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionDropdown<?php echo htmlspecialchars($attorney['userid'] ?? '', ENT_QUOTES); ?>">
                                                         <li>
-                                                            <a class="dropdown-item" href="/users/edit?id=<?php echo $attorney['userid']; ?>&type=attorney">
+                                                            <a class="dropdown-item" href="<?php echo url("users/edit/{$attorney['userid']}&type=attorney"); ?>">
                                                                 <i class="fas fa-edit me-2"></i>Edit
                                                             </a>
                                                         </li>
@@ -201,7 +201,7 @@ document.addEventListener('click', function(e) {
                 const formData = new FormData();
                 formData.append('status', '0');
                 
-                fetch(`/users/quick-update/${userid}`, {
+                fetch(`<?php echo url("users/quick-update/"); ?>${userid}`, {
                     method: 'POST',
                     body: formData
                 })
@@ -249,7 +249,7 @@ document.addEventListener('click', function(e) {
                 const formData = new FormData();
                 formData.append('status', '1');
                 
-                fetch(`/users/quick-update/${userid}`, {
+                fetch(`<?php echo url("users/quick-update/"); ?>${userid}`, {
                     method: 'POST',
                     body: formData
                 })
@@ -276,21 +276,32 @@ document.addEventListener('click', function(e) {
 // Filter functionality
 document.getElementById('applyFilters').addEventListener('click', function() {
     const filters = {
-        email: document.getElementById('email_filter').value,
-        phone: document.getElementById('phone_filter').value,
+        email: document.getElementById('email_filter').value.trim(),
+        phone: document.getElementById('phone_filter').value.trim(),
         entrydate: document.getElementById('entrydate_filter').value,
     };
 
-    // Build query string
-    const params = new URLSearchParams();
+    // Start with current URL and preserve existing parameters
+    const currentUrl = new URL(window.location.href);
+    const params = new URLSearchParams(currentUrl.search);
+
+    // Add filter parameters
     Object.keys(filters).forEach(key => {
         if (filters[key]) {
-            params.append(key, filters[key]);
+            params.set(key, filters[key]);
+        } else {
+            params.delete(key); // Remove empty filter values
         }
     });
 
-    // Reload page with filters
-    const url = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+    // Preserve existing page parameter for better UX
+    const currentPage = currentUrl.searchParams.get('page');
+    if (currentPage) {
+        params.set('page', currentPage);
+    }
+
+    // Navigate with all preserved parameters
+    const url = currentUrl.origin + currentUrl.pathname + (params.toString() ? '?' + params.toString() : '');
     window.location.href = url;
 });
 
@@ -299,7 +310,20 @@ document.getElementById('resetFilters').addEventListener('click', function() {
     document.getElementById('email_filter').value = '';
     document.getElementById('phone_filter').value = '';
     document.getElementById('entrydate_filter').value = '';
-    window.location.href = window.location.pathname;
+
+    // Keep only essential routing parameters, remove filters
+    const currentUrl = new URL(window.location.href);
+    const params = new URLSearchParams();
+    
+    // Preserve action parameter for routing
+    const action = currentUrl.searchParams.get('action');
+    if (action) {
+        params.set('action', action);
+    }
+
+    // Navigate to cleaned URL
+    const url = currentUrl.origin + currentUrl.pathname + (params.toString() ? '?' + params.toString() : '');
+    window.location.href = url;
 });
 
 // Auto-apply filters on Enter key press

@@ -1,5 +1,8 @@
 <?php
+use App\Traits\HasFileUpload;
+
 class InspectionController extends Controller {
+    use HasFileUpload;
     private $inspectionService;
 
     public function __construct() {
@@ -56,10 +59,10 @@ class InspectionController extends Controller {
 
         // Handle file upload if present (uses documents/ folder for inspectiontask.docurl)
         if ($request->hasFile('docurl')) {
-            $result = uploadFile($request->file('docurl'), 'documents');
+            $result = $this->handleFileUpload('docurl', 'documents');
+            // $result = uploadFile($request->file('docurl'), 'documents');
             if ($result['success']) {
-                // Store only the filename, not the full path
-                $data['docurl'] = $result['filename'];
+                $data['docurl'] = $result['path'];
             }
         }
 
@@ -81,10 +84,9 @@ class InspectionController extends Controller {
 
         // Handle file upload if present (uses documents/ folder for inspectiontask.docurl)
         if ($request->hasFile('docurl')) {
-            $result = uploadFile($request->file('docurl'), 'documents');
+            $result = $this->handleFileUpload('docurl', 'documents');
             if ($result['success']) {
-                // Store only the filename, not the full path
-                $data['docurl'] = $result['filename'];
+                $data['docurl'] = $result['path'];
             }
         }
 

@@ -1,6 +1,9 @@
 <?php
+
+use App\Traits\HasFileUpload;
+
 class InvestmentService {
-    use AuditFields;
+    use AuditFields, HasFileUpload;
 
     private $db;
     private $companyId;
@@ -486,6 +489,7 @@ class InvestmentService {
     }
 
     public function getProjectWithRelations($itemId) {
+        
         $project = $this->getProjectById($itemId);
         if (!$project) {
             return null;
@@ -592,8 +596,8 @@ class InvestmentService {
         $sql = "SELECT id.*, idt.title as itemDocTypeTitle 
                 FROM itemdocs id 
                 LEFT JOIN itemdoctypes idt ON id.itemdoctypeid = idt.itemdoctypeid 
-                WHERE id.itemid = ?";
-        $docs = $this->db->select($sql, [$itemId]);
+                WHERE id.itemid = ?  AND id.isdeleted = ?";
+        $docs = $this->db->select($sql, [$itemId, self::NOT_DELETED]);
         
         // Transform to match expected structure
         foreach ($docs as &$doc) {
@@ -755,10 +759,11 @@ class InvestmentService {
                 if (!empty($row['__file']) && is_array($row['__file'])) {
                     $file = $row['__file'];
                     if (!empty($file['tmp_name']) && $file['error'] === UPLOAD_ERR_OK) {
-                        $result = uploadFile($file, 'documents');
+                        $result = $this->uploadFile($file, 'documents');
+                        // $result = uploadFile($file, 'documents');
                         if ($result['success']) {
                             // Store only filename, not full path
-                            $docUrl = $result['filename'];
+                            $docUrl = $result['path'];
                         }
                     }
                 }
@@ -798,13 +803,11 @@ class InvestmentService {
                 $picUrl = null;
                 if (!empty($row['__file']) && is_array($row['__file'])) {
                     $file = $row['__file'];
-                    if (!empty($file['tmp_name']) && $file['error'] === UPLOAD_ERR_OK) {
-                        $result = uploadFile($file, 'pictures');
+                        $result = $this->uploadFile($file, 'pictures');
                         if ($result['success']) {
                             // Store only filename, not full path
-                            $picUrl = $result['filename'];
+                            $picUrl = $result['path'];
                         }
-                    }
                 }
 
                 $payload = [

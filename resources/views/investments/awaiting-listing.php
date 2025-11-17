@@ -290,7 +290,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Reload page with filters
-        const url = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+        const url = (() => {
+                const baseUrl = '<?php echo url("investments/awaiting-listing"); ?>';
+                const queryString = params.toString();
+                return baseUrl + (queryString ? '&' + queryString : '');
+            })();
         window.location.href = url;
     });
 
@@ -301,7 +305,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('filter_entry_date').value = '';
 
         // Reload page without any query parameters
-        window.location.href = window.location.pathname;
+        window.location.href = '<?php echo url("investments/awaiting-listing"); ?>';
     });
 
     // Optional: Auto-apply filters on Enter key press in filter inputs

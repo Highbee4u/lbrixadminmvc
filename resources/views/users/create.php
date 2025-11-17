@@ -9,7 +9,7 @@ $pageTitle = 'Create New ' . ucfirst($userType ?? 'Customer');
                 <div class="card-header pb-0">
                     <div class="d-flex justify-content-between align-items-center">
                         <h6 class="mb-0">Create New <?php echo ucfirst($userType ?? 'Customer'); ?></h6>
-                        <a href="/users/<?php echo $userType ?? 'customer'; ?>s" class="btn btn-sm btn-secondary">Back to <?php echo ucfirst($userType ?? 'Customer'); ?>s</a>
+                        <a href="javascript:history.back()" class="btn btn-sm btn-secondary">Back to <?php echo ucfirst($userType ?? 'Customer'); ?>s</a>
                     </div>
                 </div>
 
@@ -21,7 +21,7 @@ $pageTitle = 'Create New ' . ucfirst($userType ?? 'Customer');
                         </div>
                     <?php endif; ?>
 
-                    <form action="/users/store" method="POST" id="userForm">
+                    <form action="<?php echo url("users/store"); ?>" method="POST" id="userForm">
                         <input type="hidden" name="user_type" value="<?php echo htmlspecialchars($userType ?? 'customer'); ?>">
 
                         <!-- Nav tabs -->

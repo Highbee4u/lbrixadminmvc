@@ -415,34 +415,33 @@
                                                                             </button>
                                                                            <ul class="dropdown-menu" aria-labelledby="actionDropdown<?php echo $task['inspectiontaskid'] ?? ''; ?>">
 
-                                                                               <?php
-                                                                                   $projectId     = htmlspecialchars($project['itemid'] ?? '', ENT_QUOTES);
-                                                                                   $inspectionId  = htmlspecialchars($task['inspectiontaskid'] ?? '', ENT_QUOTES);
+                                                                                <?php
+                                                                                    $projectId     = htmlspecialchars($project['itemid'] ?? '', ENT_QUOTES);
+                                                                                    $inspectionId  = htmlspecialchars($task['inspectiontaskid'] ?? '', ENT_QUOTES);
 
-                                                                                   $statusId      = $task['statusid'] ?? null; // <-- prevents undefined index
+                                                                                    $statusId      = $task['statusid'] ?? null; // <-- prevents undefined index
 
-                                                                                   // CORRECTED: Use the same URL pattern as other working links in this file
-                                                                                   $approveUrl = '/investments/view-project?id=' . $projectId . '&inspectionid=' . $inspectionId . '&approvestatus=4';
-                                                                                   $rejectUrl  = '/investments/view-project?id=' . $projectId . '&inspectionid=' . $inspectionId . '&approvestatus=5';
+                                                                                    $approveUrl = url('investments/view-project') . "/$projectId?inspectionid=$inspectionId&approvestatus=4";
+                                                                                    $rejectUrl  = url('investments/view-project') . "/$projectId?inspectionid=$inspectionId&approvestatus=5";
 
-                                                                                   // Disable logic safely
-                                                                                   $disableApprove = ($statusId !== null && $statusId > 1 && $statusId != 4) ? 'disabled' : '';
-                                                                                   $disableReject  = ($statusId !== null && $statusId > 1 && $statusId != 5) ? 'disabled' : '';
-                                                                               ?>
+                                                                                    // Disable logic safely
+                                                                                    $disableApprove = ($statusId !== null && $statusId > 1 && $statusId != 4) ? 'disabled' : '';
+                                                                                    $disableReject  = ($statusId !== null && $statusId > 1 && $statusId != 5) ? 'disabled' : '';
+                                                                                ?>
 
-                                                                               <li>
-                                                                                   <a class="dropdown-item <?php echo $disableApprove; ?>" href="<?php echo $approveUrl; ?>">
-                                                                                       Approve
-                                                                                   </a>
-                                                                               </li>
+                                                                                <li>
+                                                                                    <a class="dropdown-item <?php echo $disableApprove; ?>" href="<?php echo $approveUrl; ?>">
+                                                                                        Approve
+                                                                                    </a>
+                                                                                </li>
 
-                                                                               <li>
-                                                                                   <a class="dropdown-item <?php echo $disableReject; ?>" href="<?php echo $rejectUrl; ?>">
-                                                                                       Reject
-                                                                                   </a>
-                                                                               </li>
+                                                                                <li>
+                                                                                    <a class="dropdown-item <?php echo $disableReject; ?>" href="<?php echo $rejectUrl; ?>">
+                                                                                        Reject
+                                                                                    </a>
+                                                                                </li>
 
-                                                                           </ul>
+                                                                            </ul>
 
 
                                                                         </div>

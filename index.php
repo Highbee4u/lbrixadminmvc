@@ -84,6 +84,11 @@ if (file_exists(APP_DIR . '/Traits/AuditFields.php')) {
     require_once APP_DIR . '/Traits/AuditFields.php';
 }
 
+// Load traits
+if (file_exists(APP_DIR . '/Traits/HasFileUpload.php')) {
+    require_once APP_DIR . '/Traits/HasFileUpload.php';
+}
+
 // Initialize the router
 $router = new Router();
 

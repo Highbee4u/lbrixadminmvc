@@ -9,7 +9,7 @@ class UsersService {
     const CUSTOMER_USERTYPE = 1;
     const ATTORNEY_USERTYPE = 2;
     const INSPECTOR_USERTYPE = 3;
-    const ADMIN_USERTYPE = 100;
+    const ADMIN_USERTYPE = 3;
 
     public function __construct() {
         $this->db = Database::getInstance();
@@ -44,171 +44,28 @@ class UsersService {
      * Get customers (usertypeid = 1)
      */
     public function getCustomers($page = 1, $perPage = 15, $filters = []) {
-        $conditions = [
-            'u.isdeleted = ?',
-            'u.companyid = ?',
-            'u.usertypeid = ?'
-        ];
-        $params = [self::NOT_DELETED, $this->companyId, self::CUSTOMER_USERTYPE];
-
-        // Apply filters
-        if (!empty($filters['email'])) {
-            $conditions[] = 'u.email LIKE ?';
-            $params[] = '%' . $filters['email'] . '%';
-        }
-        if (!empty($filters['phone'])) {
-            $conditions[] = 'u.phone LIKE ?';
-            $params[] = '%' . $filters['phone'] . '%';
-        }
-        if (!empty($filters['entrydate'])) {
-            $conditions[] = 'DATE(u.entrydate) = ?';
-            $params[] = $filters['entrydate'];
-        }
-
-        $where = implode(' AND ', $conditions);
-
-        $baseSql = "
-            SELECT 
-                u.*,
-                g.title as gender_title
-            FROM users u
-            LEFT JOIN genders g ON u.gender = g.genderid
-            WHERE $where
-            ORDER BY u.surname, u.firstname, u.entrydate DESC
-        ";
-
-        $countSql = "SELECT COUNT(*) as total FROM users u WHERE $where";
-
-        return $this->paginate($baseSql, $countSql, $params, $page, $perPage);
+        return $this->getFilteredUsers('customer', $page, $perPage, $filters);
     }
 
     /**
      * Get attorneys (usertypeid = 2)
      */
     public function getAttorneys($page = 1, $perPage = 15, $filters = []) {
-        $conditions = [
-            'u.isdeleted = ?',
-            'u.companyid = ?',
-            'u.usertypeid = ?'
-        ];
-        $params = [self::NOT_DELETED, $this->companyId, self::ATTORNEY_USERTYPE];
-
-        // Apply filters
-        if (!empty($filters['email'])) {
-            $conditions[] = 'u.email LIKE ?';
-            $params[] = '%' . $filters['email'] . '%';
-        }
-        if (!empty($filters['phone'])) {
-            $conditions[] = 'u.phone LIKE ?';
-            $params[] = '%' . $filters['phone'] . '%';
-        }
-        if (!empty($filters['entrydate'])) {
-            $conditions[] = 'DATE(u.entrydate) = ?';
-            $params[] = $filters['entrydate'];
-        }
-
-        $where = implode(' AND ', $conditions);
-
-        $baseSql = "
-            SELECT 
-                u.*,
-                g.title as gender_title
-            FROM users u
-            LEFT JOIN genders g ON u.gender = g.genderid
-            WHERE $where
-            ORDER BY u.surname, u.firstname, u.entrydate DESC
-        ";
-
-        $countSql = "SELECT COUNT(*) as total FROM users u WHERE $where";
-
-        return $this->paginate($baseSql, $countSql, $params, $page, $perPage);
+        return $this->getFilteredUsers('attorney', $page, $perPage, $filters);
     }
 
     /**
      * Get inspectors (usertypeid = 3)
      */
     public function getInspectors($page = 1, $perPage = 15, $filters = []) {
-        $conditions = [
-            'u.isdeleted = ?',
-            'u.companyid = ?',
-            'u.usertypeid = ?'
-        ];
-        $params = [self::NOT_DELETED, $this->companyId, self::INSPECTOR_USERTYPE];
-
-        // Apply filters
-        if (!empty($filters['email'])) {
-            $conditions[] = 'u.email LIKE ?';
-            $params[] = '%' . $filters['email'] . '%';
-        }
-        if (!empty($filters['phone'])) {
-            $conditions[] = 'u.phone LIKE ?';
-            $params[] = '%' . $filters['phone'] . '%';
-        }
-        if (!empty($filters['entrydate'])) {
-            $conditions[] = 'DATE(u.entrydate) = ?';
-            $params[] = $filters['entrydate'];
-        }
-
-        $where = implode(' AND ', $conditions);
-
-        $baseSql = "
-            SELECT 
-                u.*,
-                g.title as gender_title
-            FROM users u
-            LEFT JOIN genders g ON u.gender = g.genderid
-            WHERE $where
-            ORDER BY u.surname, u.firstname, u.entrydate DESC
-        ";
-
-        $countSql = "SELECT COUNT(*) as total FROM users u WHERE $where";
-
-        return $this->paginate($baseSql, $countSql, $params, $page, $perPage);
+        return $this->getFilteredUsers('inspector', $page, $perPage, $filters);
     }
 
     /**
-     * Get admin users (usertypeid = 3 AND userid > 100)
+     * Get admin users (usertypeid = 100 AND userid > 100)
      */
     public function getAdminUsers($page = 1, $perPage = 15, $filters = []) {
-        $conditions = [
-            'u.isdeleted = ?',
-            'u.companyid = ?',
-            'u.usertypeid = ?',
-            'u.userid > ?'
-        ];
-        $params = [self::NOT_DELETED, $this->companyId, self::INSPECTOR_USERTYPE, 100];
-
-        // Apply filters
-        if (!empty($filters['email'])) {
-            $conditions[] = 'u.email LIKE ?';
-            $params[] = '%' . $filters['email'] . '%';
-        }
-        if (!empty($filters['phone'])) {
-            $conditions[] = 'u.phone LIKE ?';
-            $params[] = '%' . $filters['phone'] . '%';
-        }
-        if (!empty($filters['entrydate'])) {
-            $conditions[] = 'DATE(u.entrydate) = ?';
-            $params[] = $filters['entrydate'];
-        }
-
-        $where = implode(' AND ', $conditions);
-
-        $baseSql = "
-            SELECT 
-                u.*,
-                g.title as gender_title,
-                ar.title as role_title
-            FROM users u
-            LEFT JOIN genders g ON u.gender = g.genderid
-            LEFT JOIN adminroles ar ON u.usertypeid = ar.adminroleid
-            WHERE $where
-            ORDER BY u.surname, u.firstname, u.entrydate DESC
-        ";
-
-        $countSql = "SELECT COUNT(*) as total FROM users u WHERE $where";
-
-        return $this->paginate($baseSql, $countSql, $params, $page, $perPage);
+        return $this->getFilteredUsers('admin', $page, $perPage, $filters);
     }
 
     /**
@@ -230,6 +87,133 @@ class UsersService {
         $result = $this->db->select($sql, [$userid, $this->companyId, self::NOT_DELETED]);
         return $result[0] ?? null;
     }
+    /**
+     * Centralized method for getting filtered users
+     */
+    private function getFilteredUsers($userType, $page = 1, $perPage = 15, $filters = []) {
+        $conditions = [
+            'u.isdeleted = ?',
+            'u.companyid = ?'
+        ];
+        $params = [self::NOT_DELETED, $this->companyId];
+
+        // Set user type specific conditions
+        switch ($userType) {
+            case 'customer':
+                $conditions[] = 'u.usertypeid = ?';
+                $params[] = self::CUSTOMER_USERTYPE;
+                break;
+            case 'attorney':
+                $conditions[] = 'u.usertypeid = ?';
+                $params[] = self::ATTORNEY_USERTYPE;
+                break;
+            case 'inspector':
+                $conditions[] = 'u.usertypeid = ?';
+                $params[] = self::INSPECTOR_USERTYPE;
+                break;
+            case 'admin':
+                $conditions[] = 'u.usertypeid = ?';
+                $conditions[] = 'u.userid > ?';
+                $params[] = self::ADMIN_USERTYPE;
+                $params[] = 100;
+                break;
+        }
+
+        // Apply comprehensive filters
+        if (!empty($filters['email'])) {
+            $conditions[] = 'u.email LIKE ?';
+            $params[] = '%' . $filters['email'] . '%';
+        }
+
+        if (!empty($filters['phone'])) {
+            $conditions[] = 'u.phone LIKE ?';
+            $params[] = '%' . $filters['phone'] . '%';
+        }
+
+        // Name search (surname, firstname, or full name)
+        if (!empty($filters['name'])) {
+            $conditions[] = '(u.surname LIKE ? OR u.firstname LIKE ? OR CONCAT(u.firstname, " ", u.surname) LIKE ?)';
+            $searchTerm = '%' . $filters['name'] . '%';
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+        }
+
+        if (!empty($filters['surname'])) {
+            $conditions[] = 'u.surname LIKE ?';
+            $params[] = '%' . $filters['surname'] . '%';
+        }
+
+        if (!empty($filters['firstname'])) {
+            $conditions[] = 'u.firstname LIKE ?';
+            $params[] = '%' . $filters['firstname'] . '%';
+        }
+
+        if (!empty($filters['username'])) {
+            $conditions[] = 'u.username LIKE ?';
+            $params[] = '%' . $filters['username'] . '%';
+        }
+
+        if (!empty($filters['staffno'])) {
+            $conditions[] = 'u.staffno LIKE ?';
+            $params[] = '%' . $filters['staffno'] . '%';
+        }
+
+        if (isset($filters['status']) && $filters['status'] !== '') {
+            $conditions[] = 'u.status = ?';
+            $params[] = $filters['status'];
+        }
+
+        if (!empty($filters['gender'])) {
+            $conditions[] = 'u.gender = ?';
+            $params[] = $filters['gender'];
+        }
+
+        // Date range filtering
+        if (!empty($filters['entrydate_from'])) {
+            $conditions[] = 'DATE(u.entrydate) >= ?';
+            $params[] = $filters['entrydate_from'];
+        }
+
+        if (!empty($filters['entrydate_to'])) {
+            $conditions[] = 'DATE(u.entrydate) <= ?';
+            $params[] = $filters['entrydate_to'];
+        }
+
+        if (!empty($filters['entrydate'])) {
+            // Single date filter (backward compatibility)
+            $conditions[] = 'DATE(u.entrydate) = ?';
+            $params[] = $filters['entrydate'];
+        }
+
+        $where = implode(' AND ', $conditions);
+
+        // Build SELECT based on user type
+        $baseSql = "
+            SELECT 
+                u.*,
+                g.title as gender_title
+        ";
+
+        if ($userType === 'admin') {
+            $baseSql .= ",
+                ar.title as role_title
+            FROM users u
+            LEFT JOIN genders g ON u.gender = g.genderid
+            LEFT JOIN adminroles ar ON u.usertypeid = ar.adminroleid";
+        } else {
+            $baseSql .= "
+            FROM users u
+            LEFT JOIN genders g ON u.gender = g.genderid";
+        }
+
+        $baseSql .= " WHERE $where ORDER BY u.surname, u.firstname, u.entrydate DESC";
+
+        $countSql = "SELECT COUNT(*) as total FROM users u WHERE $where";
+
+        return $this->paginate($baseSql, $countSql, $params, $page, $perPage);
+    }
+
 
     /**
      * Update user
@@ -247,8 +231,14 @@ class UsersService {
 
         foreach ($allowedFields as $field) {
             if (isset($data[$field])) {
+                // Handle empty values for date fields - convert to NULL
+                $value = $data[$field];
+                if (in_array($field, ['dateofbirth']) && $value === '') {
+                    $value = null;
+                }
+                
                 $updates[] = "$field = ?";
-                $params[] = $data[$field];
+                $params[] = $value;
             }
         }
 
@@ -262,10 +252,12 @@ class UsersService {
             return false;
         }
 
-        // Add updateby and updatedate
-        $updates[] = 'modifyby = ?';
-        $updates[] = 'modifydate = NOW()';
-        $params[] = Auth::id();
+        // Use withUpdateAudit to add audit fields
+        $auditData = $this->withUpdateAudit([]);
+        foreach ($auditData as $field => $value) {
+            $updates[] = "$field = ?";
+            $params[] = $value;
+        }
 
         // Add WHERE conditions
         $params[] = $userid;
@@ -273,7 +265,7 @@ class UsersService {
         $params[] = self::NOT_DELETED;
 
         $sql = "
-            UPDATE users 
+            UPDATE users
             SET " . implode(', ', $updates) . "
             WHERE userid = ?
                 AND companyid = ?
@@ -312,20 +304,13 @@ class UsersService {
             $params[] = password_hash($data['password'], PASSWORD_DEFAULT);
         }
 
-        // Add audit fields
-        $columns[] = 'companyid';
-        $columns[] = 'entryby';
-        $columns[] = 'entrydate';
-        $columns[] = 'isdeleted';
-        
-        $placeholders[] = '?';
-        $placeholders[] = '?';
-        $placeholders[] = 'NOW()';
-        $placeholders[] = '?';
-        
-        $params[] = $this->companyId;
-        $params[] = Auth::id();
-        $params[] = self::NOT_DELETED;
+        // Use withUpdateAudit to add audit fields for insert operation
+        $auditData = $this->withUpdateAudit([]);
+        foreach ($auditData as $field => $value) {
+            $columns[] = $field;
+            $placeholders[] = '?';
+            $params[] = $value;
+        }
 
         $sql = "
             INSERT INTO users (" . implode(', ', $columns) . ")
@@ -373,22 +358,43 @@ class UsersService {
 
         if ($existing) {
             // Update existing
+            $updateData = $this->withUpdateAudit([
+                'serviceid' => $serviceid
+            ]);
+            
+            $setClause = [];
+            $params = [];
+            foreach ($updateData as $field => $value) {
+                $setClause[] = "$field = ?";
+                $params[] = $value;
+            }
+            
+            $params[] = $userid;
+            $params[] = self::NOT_DELETED;
+            
             $sql = "
-                UPDATE userservices 
-                SET serviceid = ?, 
-                    modifyby = ?, 
-                    modifydate = NOW()
-                WHERE userid = ? 
+                UPDATE userservices
+                SET " . implode(', ', $setClause) . "
+                WHERE userid = ?
                     AND isdeleted = ?
             ";
-            return $this->db->query($sql, [$serviceid, Auth::id(), $userid, self::NOT_DELETED]);
+            return $this->db->query($sql, $params);
         } else {
             // Insert new
+            $insertData = $this->withUpdateAudit([
+                'userid' => $userid,
+                'serviceid' => $serviceid
+            ]);
+            
+            $columns = array_keys($insertData);
+            $placeholders = array_fill(0, count($insertData), '?');
+            $params = array_values($insertData);
+            
             $sql = "
-                INSERT INTO userservices (userid, serviceid, companyid, entryby, entrydate, isdeleted)
-                VALUES (?, ?, ?, ?, NOW(), ?)
+                INSERT INTO userservices (" . implode(', ', $columns) . ")
+                VALUES (" . implode(', ', $placeholders) . ")
             ";
-            return $this->db->query($sql, [$userid, $serviceid, $this->companyId, Auth::id(), self::NOT_DELETED]);
+            return $this->db->query($sql, $params);
         }
     }
 }

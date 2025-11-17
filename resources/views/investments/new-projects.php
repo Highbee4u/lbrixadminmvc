@@ -1,5 +1,4 @@
 <?php $pageTitle = 'Pending Projects'; ?>
-<?php include __DIR__ . '/../partials/topnav.php'; ?>
 
 <div class="container-fluid py-4">
     <!-- Filter Bar Section -->
@@ -57,7 +56,7 @@
                 <div class="card-header pb-0">
                     <div class="d-flex justify-content-between align-items-center">
                         <h6>Pending Projects</h6>
-                        <a href="/investments/add-project" class="btn btn-success">
+                        <a href="<?php echo url('investments/add-project'); ?>" class="btn btn-success">
                             <i class="fas fa-plus me-2"></i>Add Project
                         </a>
                     </div>
@@ -91,12 +90,12 @@
                                                     </button>
                                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionDropdown<?php echo htmlspecialchars($project['itemid'] ?? '', ENT_QUOTES); ?>">
                                                         <li>
-                                                            <a class="dropdown-item" href="/investments/view-project?id=<?php echo htmlspecialchars($project['itemid'] ?? '', ENT_QUOTES); ?>">
+                                                            <a class="dropdown-item" href="<?php echo url("investments/project-detail/" . htmlspecialchars($project['itemid'] ?? '', ENT_QUOTES)); ?>">
                                                                 <i class="fas fa-eye me-2"></i>View
                                                             </a>
                                                         </li>
                                                         <li>
-                                                            <a class="dropdown-item" href="/investments/edit-project?id=<?php echo htmlspecialchars($project['itemid'] ?? '', ENT_QUOTES); ?>">
+                                                            <a class="dropdown-item" href="<?php echo url("investments/edit-project/" . htmlspecialchars($project['itemid'] ?? '', ENT_QUOTES)); ?>">
                                                                 <i class="fas fa-edit me-2"></i>Edit
                                                             </a>
                                                         </li>
@@ -312,13 +311,17 @@
             const ed = document.getElementById('filter_entry_date').value;
             if (ot) params.append('ownership_type', ot);
             if (ed) params.append('entry_date', ed);
-            window.location.href = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+            window.location.href = (() => {
+                const baseUrl = '<?php echo url("investments/new-projects"); ?>';
+                const queryString = params.toString();
+                return baseUrl + (queryString ? '&' + queryString : '');
+            })();
         });
     }
     const resetBtn = document.getElementById('resetFilters');
     if (resetBtn) {
         resetBtn.addEventListener('click', function(){
-            window.location.href = window.location.pathname;
+            window.location.href = '<?php echo url("investments/new-projects"); ?>';
         });
     }
 })();
@@ -364,7 +367,7 @@ document.addEventListener('click', function(e){
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`/investments/projects/${id}`, { method: 'DELETE' })
+                fetch(`<?php echo url("investments/projects/delete") ?>/${id}`, { method: 'POST' })
                     .then(r => r.json().then(data => ({ok: r.ok, data})))
                     .then(({ok, data}) => {
                         if (ok && data.success) {
@@ -397,7 +400,7 @@ document.addEventListener('click', function(e){
             confirmButtonText: 'Yes, reject it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`/investments/projects/reject/${id}`, { method: 'POST' })
+                fetch(`<?php echo url("investments/projects/reject") ?>/${id}`, { method: 'POST' })
                     .then(r => r.json().then(data => ({ok: r.ok, data})))
                     .then(({ok, data}) => {
                         if (ok && data.success) {
@@ -433,7 +436,7 @@ if (createInspectionForm) {
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating...';
         
-        fetch('/inspection/tasks/store', { method:'POST', body: fd })
+        fetch('<?php echo url("inspection/tasks/store") ?>', { method:'POST', body: fd })
             .then(r => r.json().then(data => ({ok: r.ok, data})))
             .then(({ok, data}) => {
                 submitBtn.disabled = false;

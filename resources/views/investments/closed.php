@@ -56,7 +56,7 @@
                 <div class="card-header pb-0">
                     <div class="d-flex justify-content-between align-items-center">
                         <h6>Closed Projects</h6>
-                        <a href="/investments/add-project" class="btn btn-success">
+                        <a href="<?php echo url('investments/add-project'); ?>" class="btn btn-success">
                             <i class="fas fa-plus me-2"></i>Add Project
                         </a>
                     </div>
@@ -90,7 +90,7 @@
                                                     </button>
                                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionDropdown<?php echo htmlspecialchars($project['itemid'] ?? '', ENT_QUOTES); ?>">
                                                         <li>
-                                                            <a class="dropdown-item" href="/investments/view-project?id=<?php echo htmlspecialchars($project['itemid'] ?? '', ENT_QUOTES); ?>">
+                                                            <a class="dropdown-item" href="<?php echo url('investments/view-project') ."/". htmlspecialchars($project['itemid'] ?? '', ENT_QUOTES); ?>">
                                                                 <i class="fas fa-eye me-2"></i>View
                                                             </a>
                                                         </li>
@@ -206,13 +206,17 @@
             const ed = document.getElementById('filter_entry_date').value;
             if (ot) params.append('ownership_type', ot);
             if (ed) params.append('entry_date', ed);
-            window.location.href = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+            window.location.href = (() => {
+                const baseUrl = '<?php echo url("investments/closed"); ?>';
+                const queryString = params.toString();
+                return baseUrl + (queryString ? '&' + queryString : '');
+            })();
         });
     }
     const resetBtn = document.getElementById('resetFilters');
     if (resetBtn) {
         resetBtn.addEventListener('click', function(){
-            window.location.href = window.location.pathname;
+            window.location.href = '<?php echo url("investments/closed"); ?>';
         });
     }
 })();

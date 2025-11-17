@@ -15,7 +15,7 @@
                             <select class="form-select" id="filter_transaction_type" name="transaction_type">
                                 <option value="">All Types</option>
                                 <?php foreach ($bidTypes as $bidType): ?>
-                                    <option value="<?php echo htmlspecialchars($bidType['bidtypeid'] ?? '', ENT_QUOTES); ?>" <?php echo ($_GET['transaction_type'] ?? '') == $bidType['bidtypeid'] ? 'selected' : ''; ?>>
+                                    <option value="<?php echo htmlspecialchars($bidType['bidtypeid'] ?? '', ENT_QUOTES); ?>" <?php echo ($filters['transaction_type'] ?? '') == $bidType['bidtypeid'] ? 'selected' : ''; ?>>
                                         <?php echo htmlspecialchars($bidType['options'] ?? '', ENT_QUOTES); ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -23,30 +23,30 @@
                         </div>
                         <div class="col-lg-2 col-md-6">
                             <label for="filter_email" class="form-label fw-bold">Email</label>
-                            <input type="text" class="form-control" id="filter_email" name="email" value="<?php echo htmlspecialchars($_GET['email'] ?? '', ENT_QUOTES); ?>" placeholder="Search by email">
+                            <input type="text" class="form-control" id="filter_email" name="email" value="<?php echo htmlspecialchars($filters['email'] ?? '', ENT_QUOTES); ?>" placeholder="Search by email">
                         </div>
                         <div class="col-lg-2 col-md-6">
                             <label for="filter_phone" class="form-label fw-bold">Phone</label>
-                            <input type="text" class="form-control" id="filter_phone" name="phone" value="<?php echo htmlspecialchars($_GET['phone'] ?? '', ENT_QUOTES); ?>" placeholder="Search by phone">
+                            <input type="text" class="form-control" id="filter_phone" name="phone" value="<?php echo htmlspecialchars($filters['phone'] ?? '', ENT_QUOTES); ?>" placeholder="Search by phone">
                         </div>
                         <div class="col-lg-2 col-md-6">
                             <label for="filter_status" class="form-label fw-bold">Status</label>
                             <select class="form-select" id="filter_status" name="status">
                                 <option value="">All Status</option>
-                                <option value="1" <?php echo ($_GET['status'] ?? '') == '1' ? 'selected' : ''; ?>>Active</option>
-                                <option value="0" <?php echo ($_GET['status'] ?? '') == '0' ? 'selected' : ''; ?>>Inactive</option>
+                                <option value="1" <?php echo ($filters['status'] ?? '') == '1' ? 'selected' : ''; ?>>Active</option>
+                                <option value="0" <?php echo ($filters['status'] ?? '') == '0' ? 'selected' : ''; ?>>Inactive</option>
                             </select>
                         </div>
                         <div class="col-lg-2 col-md-6">
                             <label for="filter_offerdate" class="form-label fw-bold">Offer Date</label>
-                            <input type="date" class="form-control" id="filter_offerdate" name="offerdate" value="<?php echo htmlspecialchars($_GET['offerdate'] ?? '', ENT_QUOTES); ?>">
+                            <input type="date" class="form-control" id="filter_offerdate" name="offerdate" value="<?php echo htmlspecialchars($filters['offerdate'] ?? '', ENT_QUOTES); ?>">
                         </div>
                         <div class="col-lg-2 col-md-6">
                             <label for="filter_attorney" class="form-label fw-bold">Attorney</label>
                             <select class="form-select" id="filter_attorney" name="attorney">
                                 <option value="">All Attorneys</option>
                                 <?php foreach ($attorneys as $attorney): ?>
-                                    <option value="<?php echo htmlspecialchars($attorney['userid'] ?? '', ENT_QUOTES); ?>" <?php echo ($_GET['attorney'] ?? '') == $attorney['userid'] ? 'selected' : ''; ?>>
+                                    <option value="<?php echo htmlspecialchars($attorney['userid'] ?? '', ENT_QUOTES); ?>" <?php echo ($filters['attorney'] ?? '') == $attorney['userid'] ? 'selected' : ''; ?>>
                                         <?php echo htmlspecialchars(trim(($attorney['surname'] ?? '') . ' ' . ($attorney['firstname'] ?? '')), ENT_QUOTES); ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -65,9 +65,9 @@
                             </div>
                         </div>
                     </div>
-                    <?php if (!empty(array_filter($_GET))): ?>
+                    <?php if (!empty(array_filter($filters))): ?>
                         <span class="badge bg-info text-white ms-2">
-                            <i class="fas fa-filter me-1"></i><?php echo count(array_filter($_GET)); ?> active filter(s)
+                            <i class="fas fa-filter me-1"></i><?php echo count(array_filter($filters)); ?> active filter(s)
                         </span>
                     <?php endif; ?>
                 </div>
@@ -285,23 +285,34 @@ $(document).ready(function() {
     $('#applyFilters').on('click', function() {
         const filters = {
             transaction_type: $('#filter_transaction_type').val(),
-            email: $('#filter_email').val(),
-            phone: $('#filter_phone').val(),
+            email: $('#filter_email').val().trim(),
+            phone: $('#filter_phone').val().trim(),
             status: $('#filter_status').val(),
             offerdate: $('#filter_offerdate').val(),
             attorney: $('#filter_attorney').val(),
         };
 
-        // Build query string
-        const params = new URLSearchParams();
+        // Start with current URL and preserve existing parameters
+        const currentUrl = new URL(window.location.href);
+        const params = new URLSearchParams(currentUrl.search);
+
+        // Add filter parameters
         Object.keys(filters).forEach(key => {
             if (filters[key]) {
-                params.append(key, filters[key]);
+                params.set(key, filters[key]);
+            } else {
+                params.delete(key); // Remove empty filter values
             }
         });
 
-        // Reload page with filters
-        const url = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+        // Preserve existing page parameter for better UX
+        const currentPage = currentUrl.searchParams.get('page');
+        if (currentPage) {
+            params.set('page', currentPage);
+        }
+
+        // Navigate with all preserved parameters
+        const url = currentUrl.origin + currentUrl.pathname + (params.toString() ? '?' + params.toString() : '');
         window.location.href = url;
     });
 
@@ -315,15 +326,44 @@ $(document).ready(function() {
         $('#filter_offerdate').val('');
         $('#filter_attorney').val('');
 
-        // Reload page without any query parameters
-        window.location.href = window.location.pathname;
+        // Keep only essential routing parameters, remove filters
+        const currentUrl = new URL(window.location.href);
+        const params = new URLSearchParams();
+        
+        // Preserve action parameter for routing
+        const action = currentUrl.searchParams.get('action');
+        if (action) {
+            params.set('action', action);
+        }
+
+        // Navigate to cleaned URL
+        const url = currentUrl.origin + currentUrl.pathname + (params.toString() ? '?' + params.toString() : '');
+        window.location.href = url;
     });
 
     // Optional: Auto-apply filters on Enter key press in text inputs
     $('#filter_email, #filter_phone').on('keypress', function(e) {
         if (e.which === 13) { // Enter key
+            e.preventDefault();
             $('#applyFilters').click();
         }
+    });
+
+    // Real-time filtering for better UX (optional enhancement)
+    let filterTimeout;
+    $('#filter_email, #filter_phone').on('input', function() {
+        clearTimeout(filterTimeout);
+        const input = $(this);
+        filterTimeout = setTimeout(function() {
+            const emailVal = $('#filter_email').val().trim();
+            const phoneVal = $('#filter_phone').val().trim();
+            
+            // Only auto-apply if both text inputs are empty or have meaningful values
+            if ((emailVal.length === 0 || emailVal.length >= 3) &&
+                (phoneVal.length === 0 || phoneVal.length >= 3)) {
+                $('#applyFilters').click();
+            }
+        }, 1000); // 1 second delay
     });
 });
 </script>

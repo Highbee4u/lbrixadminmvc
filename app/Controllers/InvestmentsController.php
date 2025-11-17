@@ -1,5 +1,8 @@
 <?php
+use App\Traits\HasFileUpload;
+
 class InvestmentsController extends Controller {
+    use HasFileUpload;
 
     private $investmentService;
     private $inspectionService;
@@ -157,9 +160,6 @@ class InvestmentsController extends Controller {
         $itemStatuses = $this->inspectionService->getItemStatuses();
         $itemDocTypes = $this->setupService->getItemDocTypes();
 
-        Logger::info('Add Project - Attorneys count: ' . count($attorneys));
-        Logger::info('Add Project - Attorneys data: ' . json_encode($attorneys));
-
         $this->viewWithLayout('investments/add-project', compact(
             'itemTypes',
             'inspectionStatuses',
@@ -246,14 +246,6 @@ class InvestmentsController extends Controller {
             // Get project ID from POST data
             $itemId = $request->post('itemid');
             
-            // Log what we received for debugging
-            Logger::info('Update project info request', [
-                'itemid' => $itemId,
-                'itemid_type' => gettype($itemId),
-                'itemid_empty' => empty($itemId),
-                'all_post_data' => $request->all()
-            ]);
-            
             if (!$itemId || empty($itemId)) {
                 Response::json(['success' => false, 'message' => 'Project ID is required for update. Received: ' . ($itemId ?? 'null')], 400);
                 return;
@@ -303,7 +295,7 @@ class InvestmentsController extends Controller {
             
             // Update existing project
             $result = $this->investmentService->updateProject($itemId, $data);
-            
+
             if ($result['success']) {
                 Response::json([
                     'success' => true,
@@ -320,9 +312,8 @@ class InvestmentsController extends Controller {
         }
     }
 
-    public function editProject() {
+    public function editProject($id) {
         $request = Request::getInstance();
-        $id = $request->get('id');
 
         if (!$id) {
             Response::redirect('/investments/new-projects?error=Project ID required');
@@ -353,10 +344,7 @@ class InvestmentsController extends Controller {
         $projectTypes = $this->setupService->getProjectTypes();
         $itemStatuses = $this->inspectionService->getItemStatuses();
         $itemDocTypes = $this->setupService->getItemDocTypes();
-
-        Logger::info('Edit Project - Project ID: ' . $id);
-        Logger::info('Edit Project - Attorneys count: ' . count($attorneys));
-        Logger::info('Edit Project - Attorneys data: ' . json_encode($attorneys));
+        $itempicTypes = $this->setupService->getItemPicTypes();
 
         $this->viewWithLayout('investments/edit-project', compact(
             'project',
@@ -368,15 +356,14 @@ class InvestmentsController extends Controller {
             'attorneys',
             'projectTypes',
             'itemStatuses',
-            'itemDocTypes'
+            'itemDocTypes',
+            'itempicTypes'
         ));
     }
 
-    public function updateProject() {
+    public function updateProject($id) {
         $request = Request::getInstance();
-        
-        // Get ID from URL parameter (from route like /investments/projects/update/:id)
-        $id = $request->get('id');
+
         
         if (!$id) {
             Response::json(['success' => false, 'message' => 'Project ID required']);
@@ -399,6 +386,8 @@ class InvestmentsController extends Controller {
         
         // Update the project with the provided data
         $result = $this->investmentService->updateProjectStatus($id, $data);
+
+        Logger::info('Update Project - ID: ' . $id . ', Data: ' . json_encode($data) . ', Result: ' . ($result ? 'Success' : 'Failure'));
         
         Response::json([
             'success' => $result,
@@ -406,9 +395,8 @@ class InvestmentsController extends Controller {
         ]);
     }
 
-    public function destroyProject() {
+    public function destroyProject($id) {
         $request = Request::getInstance();
-        $id = $request->get('id');
         
         // Ensure id is a scalar value
         if (is_array($id)) {
@@ -427,9 +415,8 @@ class InvestmentsController extends Controller {
         ]);
     }
 
-    public function deleteAwaitingProject() {
+    public function deleteAwaitingProject($id) {
         $request = Request::getInstance();
-        $id = $request->post('id');
 
         if (!$id) {
             Response::json(['success' => false, 'message' => 'Project ID required']);
@@ -443,9 +430,8 @@ class InvestmentsController extends Controller {
         ]);
     }
 
-    public function viewProject() {
+    public function viewProject($id) {
         $request = Request::getInstance();
-        $id = $request->get('id');
 
         if (!$id) {
             $_SESSION['error_message'] = 'Project ID required';
@@ -521,6 +507,9 @@ class InvestmentsController extends Controller {
         // ACTION 4: Approve/reject inspection status (for iteminspections table)
         $approveStatus = $request->get('approvestatus');
         $inspectionId = $request->get('inspectionid');
+
+                Logger::info('View Project - Approve Status: ' . $approveStatus . ', Inspection ID: ' . $inspectionId);
+
         
         if ($approveStatus !== null && $inspectionId) {
             if (is_numeric($approveStatus) && is_numeric($inspectionId) && $inspectionId >= 0) {
@@ -561,9 +550,8 @@ class InvestmentsController extends Controller {
     }
 
     // AJAX Actions
-    public function deleteProject() {
+    public function deleteProject($id) {
         $request = Request::getInstance();
-        $id = $request->post('id');
 
         if (!$id) {
             Response::json(['success' => false, 'message' => 'Project ID required']);
@@ -577,9 +565,8 @@ class InvestmentsController extends Controller {
         ]);
     }
 
-    public function rejectProject() {
+    public function rejectProject($id) {
         $request = Request::getInstance();
-        $id = $request->get('id');
         
         // Ensure id is a scalar value
         if (is_array($id)) {
@@ -820,13 +807,16 @@ class InvestmentsController extends Controller {
                 'itemid' => $itemId,
                 'itemdoctypeid' => $itemDocTypeId,
                 'docstatus' => $request->post('docstatus', 1),
+                'itemdoctitle' => $request->post('itemdoctitle', ''),
+                'uploadby' => Auth::id(),
+                'uploaddate' => date('Y-m-d H:i:s'),
             ];
             
             // Handle file upload
             if (isset($_FILES['docurl']) && $_FILES['docurl']['error'] === UPLOAD_ERR_OK) {
-                $uploadResult = uploadFile($_FILES['docurl'], 'documents');
+                $uploadResult = $this->uploadFile($_FILES['docurl'], 'documents');
                 if ($uploadResult['success']) {
-                    $data['docurl'] = $uploadResult['filename'];
+                    $data['docurl'] = $uploadResult['path'];
                 } else {
                     Response::json(['success' => false, 'message' => $uploadResult['message']], 400);
                     return;
@@ -846,9 +836,8 @@ class InvestmentsController extends Controller {
         }
     }
     
-    public function getDocument() {
+    public function getDocument($docId) {
         $request = Request::getInstance();
-        $docId = $request->get('id');
         
         // Ensure docId is a scalar value
         if (is_array($docId)) {
@@ -869,15 +858,9 @@ class InvestmentsController extends Controller {
         }
     }
     
-    public function updateDocument() {
+    public function updateDocument($docId) {
         $request = Request::getInstance();
-        $docId = $request->get('id');
-        
-        // Ensure docId is a scalar value
-        if (is_array($docId)) {
-            $docId = $docId[0] ?? null;
-        }
-        
+
         try {
             if (!$docId) {
                 Response::json(['success' => false, 'message' => 'Document ID required'], 400);
@@ -913,9 +896,8 @@ class InvestmentsController extends Controller {
         }
     }
     
-    public function deleteDocument() {
+    public function deleteDocument($docId) {
         $request = Request::getInstance();
-        $docId = $request->get('id');
         
         try {
             // Ensure docId is a scalar value
@@ -941,9 +923,9 @@ class InvestmentsController extends Controller {
         }
     }
     
-    public function getProjectDocuments() {
+    public function getProjectDocuments($itemId) {
         $request = Request::getInstance();
-        $itemId = $request->get('id');
+
         
         if (!$itemId) {
             Response::json(['success' => false, 'message' => 'Project ID required'], 400);
@@ -970,14 +952,15 @@ class InvestmentsController extends Controller {
             $data = [
                 'itemid' => $itemId,
                 'pictitle' => $request->post('pictitle', ''),
+                'pictitleid' => $request->post('pictitleid'),
                 'picstatus' => $request->post('picstatus', 1),
             ];
             
             // Handle file upload
             if (isset($_FILES['picurl']) && $_FILES['picurl']['error'] === UPLOAD_ERR_OK) {
-                $uploadResult = uploadFile($_FILES['picurl'], 'pictures');
+                $uploadResult = $this->uploadFile($_FILES['picurl'], 'pictures');
                 if ($uploadResult['success']) {
-                    $data['picurl'] = $uploadResult['filename'];
+                    $data['picurl'] = $uploadResult['path'];
                 } else {
                     Response::json(['success' => false, 'message' => $uploadResult['message']], 400);
                     return;
@@ -1023,15 +1006,9 @@ class InvestmentsController extends Controller {
         }
     }
     
-    public function updateImage() {
+    public function updateImage($picId) {
         $request = Request::getInstance();
-        $picId = $request->get('id');
-        
-        // Ensure picId is a scalar value
-        if (is_array($picId)) {
-            $picId = $picId[0] ?? null;
-        }
-        
+
         try {
             if (!$picId) {
                 Response::json(['success' => false, 'message' => 'Image ID required'], 400);
@@ -1067,14 +1044,9 @@ class InvestmentsController extends Controller {
         }
     }
     
-    public function deleteImage() {
+    public function deleteImage($picId) {
         $request = Request::getInstance();
-        $picId = $request->get('id');
-        
-        // Ensure picId is a scalar value
-        if (is_array($picId)) {
-            $picId = $picId[0] ?? null;
-        }
+
         
         try {
             if (!$picId) {
@@ -1095,9 +1067,8 @@ class InvestmentsController extends Controller {
         }
     }
     
-    public function getProjectImages() {
+    public function getProjectImages($itemId) {
         $request = Request::getInstance();
-        $itemId = $request->get('id');
         
         if (!$itemId) {
             Response::json(['success' => false, 'message' => 'Project ID required'], 400);
@@ -1110,14 +1081,7 @@ class InvestmentsController extends Controller {
     
     // ==================== INSPECTION & INVESTORS ====================
     
-    public function getProjectInspections() {
-        $request = Request::getInstance();
-        $itemId = $request->get('id');
-        
-        // Ensure itemId is a scalar value
-        if (is_array($itemId)) {
-            $itemId = $itemId[0] ?? null;
-        }
+    public function getProjectInspections($itemId) {
         
         if (!$itemId) {
             Response::json(['success' => false, 'message' => 'Project ID required'], 400);
@@ -1133,14 +1097,7 @@ class InvestmentsController extends Controller {
         }
     }
     
-    public function getProjectInvestors() {
-        $request = Request::getInstance();
-        $itemId = $request->get('id');
-        
-        // Ensure itemId is a scalar value
-        if (is_array($itemId)) {
-            $itemId = $itemId[0] ?? null;
-        }
+    public function getProjectInvestors($itemId) {
         
         if (!$itemId) {
             Response::json(['success' => false, 'message' => 'Project ID required'], 400);

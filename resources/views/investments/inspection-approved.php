@@ -1,5 +1,4 @@
 <?php $pageTitle = 'Inspection Approved'; ?>
-<?php include __DIR__ . '/../partials/topnav.php'; ?>
 
 <div class="container-fluid py-4">
     <!-- Filter Bar Section -->
@@ -235,13 +234,17 @@
             const ed = document.getElementById('filter_entry_date').value;
             if (ot) params.append('ownership_type', ot);
             if (ed) params.append('entry_date', ed);
-            window.location.href = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+            window.location.href = (() => {
+                const baseUrl = '<?php echo url("investments/inspection-approved"); ?>';
+                const queryString = params.toString();
+                return baseUrl + (queryString ? '&' + queryString : '');
+            })();
         });
     }
     const resetBtn = document.getElementById('resetFilters');
     if (resetBtn) {
         resetBtn.addEventListener('click', function(){
-            window.location.href = window.location.pathname;
+            window.location.href = '<?php echo url("investments/inspection-approved"); ?>';
         });
     }
 })();

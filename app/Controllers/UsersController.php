@@ -91,9 +91,8 @@ class UsersController extends Controller {
     /**
      * Update user (status or usertype)
      */
-    public function updateUser() {
+    public function updateUser($userid) {
         $request = Request::getInstance();
-        $userid = $request->get('id');
         
         if (!$userid) {
             Response::json(['success' => false, 'message' => 'User ID is required'], 400);
@@ -127,9 +126,8 @@ class UsersController extends Controller {
     /**
      * Show edit form for customer/attorney/inspector
      */
-    public function edit() {
+    public function edit($userid) {
         $request = Request::getInstance();
-        $userid = $request->get('id');
         $userType = $request->get('type', 'customer'); // customer, attorney, inspector, admin
         
         // Handle redirect based on user type (admin is singular, others are plural)
@@ -172,16 +170,16 @@ class UsersController extends Controller {
     /**
      * Update user profile
      */
-    public function update() {
+    public function update($userid) {
         $request = Request::getInstance();
-        $userid = $request->get('id');
+
         $userType = $request->post('user_type', 'customer');
         
         // Handle redirect based on user type (admin is singular, others are plural)
-        $redirectPath = $userType === 'admin' ? '/users/admin' : '/users/' . $userType . 's';
+        $redirectPath = $userType === 'admin' ? 'users/admin' : 'users/' . $userType . 's';
         
         if (!$userid) {
-            Response::redirect($redirectPath);
+            Response::redirect(url($redirectPath));
             return;
         }
 
@@ -205,7 +203,6 @@ class UsersController extends Controller {
 
         // Attorney-specific fields
         if ($userType === 'attorney') {
-            $data['otherusertype'] = $request->post('otherusertype');
             $data['registrationnumber'] = $request->post('registrationnumber');
         }
 
@@ -219,7 +216,7 @@ class UsersController extends Controller {
             } else {
                 // Password mismatch - redirect back with error
                 Session::flash('error', 'Passwords do not match');
-                Response::redirect('/users/edit?id=' . $userid . '&type=' . $userType);
+                Response::redirect(url('users/edit/' . $userid . '&type=' . $userType));
                 return;
             }
         }
@@ -240,8 +237,7 @@ class UsersController extends Controller {
         }
 
         // Handle redirect based on user type (admin is singular, others are plural)
-        $redirectPath = $userType === 'admin' ? '/users/admin' : '/users/' . $userType . 's';
-        Response::redirect($redirectPath);
+        Response::redirect(url($redirectPath));
     }
 
     /**
