@@ -11,6 +11,7 @@ class InvestmentsController extends Controller {
 
     public function __construct() {
         parent::__construct();
+        $this->requireAuth(); // Protect all methods
         $this->investmentService = new InvestmentService();
         $this->inspectionService = new InspectionService();
         $this->setupService = new SetupService();

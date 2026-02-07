@@ -1,5 +1,9 @@
 <?php
 class AdminController extends Controller {
+    public function __construct() {
+        parent::__construct();
+        $this->requireAuth(); // Protect all methods
+    }
     public function roles() {
         $roleModel = new AdminRole();
         $roles = $roleModel->getActiveRoles();

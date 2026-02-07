@@ -1,7 +1,10 @@
 <?php
-class HomeController extends Controller {
-    public function index() {
+class HomeController extends Controller
+{
+    public function index()
+    {
         // Check if user is authenticated
+        $this->requireAuth();
         if (Auth::check()) {
             // User is logged in, redirect to dashboard
             $this->redirect('dashboard');

@@ -7,6 +7,7 @@ class ListingsController extends Controller {
 
     public function __construct() {
         parent::__construct();
+        $this->requireAuth(); // Protect all methods
         $this->listingService = new ListingService();
         $this->inspectionService = new InspectionService();
         $this->setupService = new SetupService();

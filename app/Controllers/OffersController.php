@@ -4,6 +4,7 @@ class OffersController extends Controller {
 
     public function __construct() {
         parent::__construct();
+        $this->requireAuth(); // Protect all methods
         $this->offerService = new OfferService();
     }
 

@@ -4,6 +4,7 @@ class AdminSetupController extends Controller {
 
     public function __construct() {
         parent::__construct();
+        $this->requireAuth(); // Protect all methods
         $this->adminSetupService = new AdminSetupService();
     }
 
