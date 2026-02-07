@@ -5,18 +5,14 @@ class Database {
 
     private function __construct() {
         try {
-            // $host = Config::get('database.host', 'localhost');
-            // $dbname = Config::get('database.database', 'lbrixtest');
-            // $username = Config::get('database.username', 'root');
-            // $password = Config::get('database.password', '');
-
-            $host = Config::get('database.host', 'localhost');
-            $dbname = Config::get('database.database', 'oyesoft_lbrixdata');
-            $username = Config::get('database.username', 'root');
-            $password = Config::get('database.password', '');
+            // Use constants defined in config/database.php
+            $host = defined('DB_HOST') ? DB_HOST : 'localhost';
+            $dbname = defined('DB_NAME') ? DB_NAME : 'lbrixtest';
+            $username = defined('DB_USER') ? DB_USER : 'root';
+            $password = defined('DB_PASS') ? DB_PASS : '';
             
             $this->connection = new PDO(
-                "mysql:host={$host};dbname={$dbname}",
+                "mysql:host={$host};dbname={$dbname};charset=utf8mb4",
                 $username,
                 $password,
                 [
@@ -26,7 +22,10 @@ class Database {
                 ]
             );
         } catch (PDOException $e) {
-            die("Database connection failed: " . $e->getMessage());
+            Logger::error("Database connection failed: " . $e->getMessage());
+            http_response_code(500);
+            echo "Database connection error. Contact administrator.";
+            exit;
         }
     }
 
@@ -42,9 +41,14 @@ class Database {
     }
 
     public function query($sql, $params = []) {
-        $stmt = $this->connection->prepare($sql);
-        $stmt->execute($params);
-        return $stmt;
+        try {
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute($params);
+            return $stmt;
+        } catch (PDOException $e) {
+            Logger::error("Query Error: " . $e->getMessage() . " | SQL: " . $sql . " | Params: " . json_encode($params));
+            throw $e;
+        }
     }
 
     public function select($sql, $params = []) {

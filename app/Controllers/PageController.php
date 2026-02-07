@@ -1,10 +1,6 @@
 <?php
 class PageController extends Controller {
 
-
-
-
-{
     /**
      * Display all the static pages when authenticated
      *

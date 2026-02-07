@@ -35,6 +35,15 @@ http://yourdomain.com/index.php
 
 That's it! No .htaccess or web.config configuration needed!
 
+### 4. Verify Database Schema (IMPORTANT)
+After uploading, visit:
+```
+http://yourdomain.com/dbcompare.php
+```
+This tool will check if your server database is missing any tables compared to your local version.
+
+If tables are missing, use the **SQL Executor** linked from that page to create them.
+
 ---
 
 ## 📂 Project Structure
@@ -200,6 +209,39 @@ See `MIGRATION-GUIDE.md` for detailed instructions on moving your existing proje
 5. Update URLs to use `url()` helper
 6. Update asset paths to use `asset()` helper
 7. Upload and test!
+
+---
+
+## 🛠 Server Maintenance Tools (Built-in)
+
+This framework includes tools to help you manage your application on any server:
+
+### 1. Database Comparison (`dbcompare.php`)
+Compares your local database structure with the server's database.
+- **Why use it?** When you move to a new server, you might forget to create some tables.
+- **What it does:** Lists all missing tables and provides SQL to create them.
+- **Special Check:** Specifically checks for the `genders` table which is crucial for user registration.
+
+### 2. SQL Executor (`sqlexecutor.php`)
+A built-in tool to run SQL queries directly on your server.
+- **Why use it?** Shared hosting control panels (like phpMyAdmin) can be slow or hard to access.
+- **How to use:** Paste the SQL provided by `dbcompare.php` here to fix your database instantly.
+
+---
+
+## ⚙️ Core Features (index.php)
+
+The `index.php` file is the brain of the application, designed for maximum robustness:
+
+- **Universal Compatibility:** Auto-detects environment and loads necessary files.
+- **Smart Routing:** Supports both `root.com/index.php?url=page` and `root.com/?action=page`.
+- **Error Handling:** 
+  - Catches fatal PHP errors and exceptions.
+  - Logs them to `storage/logs/` (if configured) or displays friendly error messages.
+  - Prevents the "White Screen of Death".
+- **Auto-Loading:** 
+  - Automatically loads Composer dependencies (if available).
+  - Falls back to manual loading of Core files if Composer is missing.
 
 ---
 

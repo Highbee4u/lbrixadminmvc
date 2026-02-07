@@ -89,11 +89,46 @@ if (file_exists(APP_DIR . '/Traits/HasFileUpload.php')) {
     require_once APP_DIR . '/Traits/HasFileUpload.php';
 }
 
+// Set up error handling
+set_error_handler(function($errno, $errstr, $errfile, $errline) {
+    Logger::error("PHP Error [$errno]: $errstr in $errfile on line $errline");
+    if ($errno === E_FATAL) {
+        http_response_code(500);
+        echo "Internal Server Error";
+        exit;
+    }
+});
+
+set_exception_handler(function($exception) {
+    Logger::error("Exception: " . $exception->getMessage() . " in " . $exception->getFile() . " on line " . $exception->getLine());
+    http_response_code(500);
+    echo "Internal Server Error: " . htmlspecialchars($exception->getMessage());
+    exit;
+});
+
+register_shutdown_function(function() {
+    $error = error_get_last();
+    if ($error !== null && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+        Logger::error("Fatal Error: " . $error['message'] . " in " . $error['file'] . " on line " . $error['line']);
+    }
+});
+
 // Initialize the router
 $router = new Router();
 
 // Get the URL from query string (works everywhere!)
+// Check both 'url' and 'action' parameters for compatibility
 $url = isset($_GET['url']) ? trim($_GET['url'], '/') : '';
+if (empty($url) && isset($_GET['action'])) {
+    $url = trim($_GET['action'], '/');
+}
 
-// Route the request
-$router->dispatch($url);
+// Route the request with error handling
+try {
+    $router->dispatch($url);
+} catch (Exception $e) {
+    Logger::error("Dispatch Error: " . $e->getMessage() . " | Stack: " . $e->getTraceAsString());
+    http_response_code(500);
+    echo "Internal Server Error: " . htmlspecialchars($e->getMessage());
+    exit;
+}

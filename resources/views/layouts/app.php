@@ -1,9 +1,23 @@
 <?php
 // Check if user is authenticated, redirect to login if not
+// But only redirect once to prevent infinite loops - use a session flag
 if (!Auth::check()) {
-    redirect('login');
-    exit;
+    // Set a flag to prevent infinite redirect loops on unstable sessions (IIS)
+    if (!isset($_SESSION['_auth_redirect_attempt'])) {
+        $_SESSION['_auth_redirect_attempt'] = true;
+        redirect('login');
+        exit;
+    } else {
+        // We've already tried to redirect - don't try again
+        // This prevents redirect loops on systems with session issues
+        unset($_SESSION['_auth_redirect_attempt']);
+        echo "Authentication required. Please <a href='" . url('login') . "'>log in</a>.";
+        exit;
+    }
 }
+
+// Clear the redirect attempt flag on successful auth
+unset($_SESSION['_auth_redirect_attempt']);
 
 // Prevent browser caching of protected pages
 header('Cache-Control: no-cache, no-store, must-revalidate');

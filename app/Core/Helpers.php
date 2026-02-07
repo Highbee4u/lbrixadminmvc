@@ -187,7 +187,10 @@ class Helpers {
 
     if (!function_exists('redirect')) {
         function redirect($path = '') {
-            header('Location: ' . url($path));
+            $redirectUrl = url($path);
+            // Log all redirects
+            Logger::info("REDIRECT: From " . ($_SERVER['REQUEST_URI'] ?? 'unknown') . " To " . $redirectUrl);
+            header('Location: ' . $redirectUrl);
             exit;
         }
     }

@@ -13,13 +13,12 @@ class AdminLoginController extends Controller {
             $this->redirect('dashboard');
             return;
         }
-
         $this->viewWithLayout('auth/login', ['title' => 'Sign In'], 'layouts.guest');
     }
 
     public function login() {
         $request = Request::getInstance();
-        
+       
         // Validate input
         $validator = new Validator($request->post(), [
             'login' => 'required',

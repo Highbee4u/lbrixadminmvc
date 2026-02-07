@@ -1,0 +1,72 @@
+# MVC Application .htaccess for Shared Hosting (Root Level)
+# Place this file in your web root (public_html or www)
+
+<IfModule mod_rewrite.c>
+    # Enable rewrite engine
+    RewriteEngine On
+    
+    # Set the base (change if in subdirectory)
+    RewriteBase /
+    
+    # Handle Authorization Header (for APIs)
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    
+    # SECURITY: Block direct access to sensitive directories
+    RewriteRule ^app(/|$) - [F,L]
+    RewriteRule ^config(/|$) - [F,L]
+    RewriteRule ^storage(/|$) - [F,L]
+    RewriteRule ^vendor(/|$) - [F,L]
+    RewriteRule ^resources(/|$) - [F,L]
+    
+    # Allow direct access to physical files (CSS, JS, images, documents)
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+    
+    # Allow direct access to directories (if they physically exist)
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+    
+    # Remove trailing slash (optional, but recommended)
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+    
+    # MAIN ROUTING: Send all other requests to index.php
+    # The URL is passed as a query parameter 'url'
+    RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+</IfModule>
+
+# Prevent directory browsing
+Options -Indexes
+
+# Block access to specific file types
+<FilesMatch "^(\.env|\.git.*|composer\.(json|lock)|package(-lock)?\.json|\.htaccess|README\.md)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Security Headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# PHP Settings (adjust as needed)
+<IfModule mod_php7.c>
+    php_value upload_max_filesize 50M
+    php_value post_max_size 50M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+</IfModule>
+
+# Custom error pages (optional)
+# ErrorDocument 404 /index.php
+# ErrorDocument 403 /index.php
+# ErrorDocument 500 /index.php
