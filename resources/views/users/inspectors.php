@@ -94,11 +94,17 @@
                                                         <li><hr class="dropdown-divider"></li>
                                                         <?php if ($inspector['status'] == 1): ?>
                                                         <li>
-                                                            <a class="dropdown-item deactivate-user" href="#" 
+                                                            <?php if ((int)$inspector['userid'] === (int)Auth::id()): ?>
+                                                            <span class="dropdown-item text-muted" style="cursor: not-allowed;" title="You cannot deactivate your own account">
+                                                                Deactivate
+                                                            </span>
+                                                            <?php else: ?>
+                                                            <a class="dropdown-item deactivate-user" href="#"
                                                                data-userid="<?php echo $inspector['userid']; ?>"
                                                                data-name="<?php echo htmlspecialchars(trim(($inspector['surname'] ?? '') . ' ' . ($inspector['firstname'] ?? '')), ENT_QUOTES); ?>">
                                                                 Deactivate
                                                             </a>
+                                                            <?php endif; ?>
                                                         </li>
                                                         <?php endif; ?>
                                                         <?php if ($inspector['status'] == 0): ?>

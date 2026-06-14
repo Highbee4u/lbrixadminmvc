@@ -115,6 +115,21 @@ class UsersController extends Controller {
             return;
         }
 
+        // Self-protection: the logged-in user must not be able to deactivate,
+        // suspend, or change the account type of their own account.
+        if ($this->isSelf($userid)) {
+            $deactivatingSelf = isset($data['status']) && (int)$data['status'] !== 1;
+            $changingOwnType  = isset($data['usertypeid']) && (int)$data['usertypeid'] !== (int)Auth::userType();
+
+            if ($deactivatingSelf || $changingOwnType) {
+                Response::json([
+                    'success' => false,
+                    'message' => 'You cannot deactivate, suspend, or change the account type of your own account.'
+                ], 403);
+                return;
+            }
+        }
+
         $result = $this->usersService->updateUser($userid, $data);
 
         if ($result) {
@@ -122,6 +137,13 @@ class UsersController extends Controller {
         } else {
             Response::json(['success' => false, 'message' => 'Failed to update user'], 500);
         }
+    }
+
+    /**
+     * Whether the given user id is the currently authenticated user.
+     */
+    private function isSelf($userid) {
+        return (int)$userid === (int)Auth::id();
     }
 
     /**
@@ -210,7 +232,7 @@ class UsersController extends Controller {
         // Handle password update
         $password = $request->post('password');
         $passwordConfirm = $request->post('password_confirmation');
-        
+
         if (!empty($password)) {
             if ($password === $passwordConfirm) {
                 $data['password'] = $password;
@@ -220,6 +242,14 @@ class UsersController extends Controller {
                 Response::redirect(url('users/edit/' . $userid . '&type=' . $userType));
                 return;
             }
+        }
+
+        // Self-protection: a user cannot deactivate/suspend or change the type
+        // of their own account. Keep those two fields unchanged for self while
+        // still allowing the rest of the profile to be updated.
+        $isSelf = $this->isSelf($userid);
+        if ($isSelf) {
+            unset($data['status'], $data['usertypeid']);
         }
 
         // Update user
@@ -232,7 +262,11 @@ class UsersController extends Controller {
         }
 
         if ($result) {
-            Session::flash('success', ucfirst($userType) . ' updated successfully');
+            $message = ucfirst($userType) . ' updated successfully';
+            if ($isSelf) {
+                $message .= '. Note: your own status and account type cannot be changed and were left unchanged.';
+            }
+            Session::flash('success', $message);
         } else {
             Session::flash('error', 'Failed to update ' . $userType);
         }

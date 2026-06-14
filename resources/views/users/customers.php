@@ -100,11 +100,17 @@
                                                         </li>
                                                         <?php if (($customer['status'] ?? 0) == 1): ?>
                                                         <li>
-                                                            <a class="dropdown-item deactivate-user" href="javascript:;" 
+                                                            <?php if ((int)($customer['userid'] ?? 0) === (int)Auth::id()): ?>
+                                                            <span class="dropdown-item text-muted" style="cursor: not-allowed;" title="You cannot deactivate your own account">
+                                                                <i class="fas fa-ban me-2"></i>Deactivate
+                                                            </span>
+                                                            <?php else: ?>
+                                                            <a class="dropdown-item deactivate-user" href="javascript:;"
                                                                data-userid="<?php echo htmlspecialchars($customer['userid'] ?? '', ENT_QUOTES); ?>"
                                                                data-name="<?php echo htmlspecialchars(trim(($customer['surname'] ?? '') . ' ' . ($customer['firstname'] ?? '')), ENT_QUOTES); ?>">
                                                                 <i class="fas fa-ban me-2"></i>Deactivate
                                                             </a>
+                                                            <?php endif; ?>
                                                         </li>
                                                         <?php else: ?>
                                                         <li>

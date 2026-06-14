@@ -94,11 +94,17 @@
                                                         <li><hr class="dropdown-divider"></li>
                                                         <?php if (($attorney['status'] ?? 0) == 1): ?>
                                                         <li>
-                                                            <a class="dropdown-item deactivate-user" href="javascript:;" 
+                                                            <?php if ((int)($attorney['userid'] ?? 0) === (int)Auth::id()): ?>
+                                                            <span class="dropdown-item text-muted" style="cursor: not-allowed;" title="You cannot deactivate your own account">
+                                                                <i class="fas fa-ban me-2"></i>Deactivate
+                                                            </span>
+                                                            <?php else: ?>
+                                                            <a class="dropdown-item deactivate-user" href="javascript:;"
                                                                data-userid="<?php echo htmlspecialchars($attorney['userid'] ?? '', ENT_QUOTES); ?>"
                                                                data-name="<?php echo htmlspecialchars(trim(($attorney['surname'] ?? '') . ' ' . ($attorney['firstname'] ?? '')), ENT_QUOTES); ?>">
                                                                 <i class="fas fa-ban me-2"></i>Deactivate
                                                             </a>
+                                                            <?php endif; ?>
                                                         </li>
                                                         <?php else: ?>
                                                         <li>
