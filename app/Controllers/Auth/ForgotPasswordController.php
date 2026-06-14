@@ -10,7 +10,7 @@ class ForgotPasswordController extends Controller {
      */
     public function show()
     {
-        $this->view('auth/forgot-password', ['title' => 'Forgot Password'], 'layouts/guest');
+        $this->viewWithLayout('auth/forgot-password', ['title' => 'Forgot Password'], 'layouts/guest');
     }
 
     /**

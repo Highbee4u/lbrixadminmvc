@@ -268,5 +268,17 @@ return [
     'POST /users/store' => 'UsersController@store',
     'POST /users/update/:id' => 'UsersController@update',
     'POST /users/quick-update/:id' => 'UsersController@updateUser',
+
+    // Developer tools
+    'GET /tools/sql-runner' => 'SqlRunnerController@index',
+    'POST /tools/sql-runner/execute' => 'SqlRunnerController@execute',
+
+    // shortlet routes
+    'GET /shortlet/dashboard' => 'ShortletController@dashboard',
+    'GET /shortlet/awaiting-listing' => 'ShortletController@awaitingListing',
+    'GET /shortlet/listed' => 'ShortletController@listed',
+    'GET /shortlet/in-progress' => 'ShortletController@inProgress',
+    'GET /shortlet/history' => 'ShortletController@history',
+    'GET /shortlet/detail/:id' => 'ShortletController@detail',
 ];
 
