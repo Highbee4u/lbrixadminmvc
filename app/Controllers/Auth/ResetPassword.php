@@ -1,15 +1,11 @@
 <?php
-class ResetPassword extends Controller {
-
-
 
 use Illuminate\Notifications\Notifiable;
 use App\Models\User;
 use App\Notifications\ForgotPassword;
 
+class ResetPassword extends Controller {
 
-
-{
     use Notifiable;
 
     public function show()
