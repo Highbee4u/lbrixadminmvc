@@ -1,0 +1,11 @@
+[2026-06-14 13:32:22] [INFO] REDIRECT: From /verify-otp To https://lbrixnewmodel.test/index.php?action=login
+[2026-06-14 13:37:10] [INFO] REDIRECT: From /index.php?url=forgot-password To https://lbrixnewmodel.test/index.php?action=login
+[2026-06-14 13:37:57] [INFO] REDIRECT: From /index.php?url=forgot-password To https://lbrixnewmodel.test/index.php?action=login
+[2026-06-14 13:40:42] [INFO] REDIRECT: From /favicon.ico To https://lbrixnewmodel.test/index.php?action=login
+[2026-06-14 13:47:41] [DEBUG] Login attempt - Using field: email, value: cto@majadtek.com.ng
+[2026-06-14 13:47:41] [DEBUG] Login attempt - SQL: SELECT * FROM users WHERE email = :login AND isdeleted != -1 LIMIT 1
+[2026-06-14 13:47:41] [INFO] Login attempt - Found user: {"userid":1,"username":"admin","email":"cto@majadtek.com.ng","usertypeid":3,"status":1,"password_length":60}
+[2026-06-14 13:47:41] [INFO] Login attempt - Password verification starting. Hash length: 60
+[2026-06-14 13:47:41] [INFO] Login attempt - Bcrypt verification successful
+[2026-06-14 13:47:41] [INFO] REDIRECT: From /index.php?action=login To https://lbrixnewmodel.test/index.php?action=dashboard
+[2026-06-14 13:50:25] [INFO] REDIRECT: From /index.php?action=logout To https://lbrixnewmodel.test/index.php?action=login

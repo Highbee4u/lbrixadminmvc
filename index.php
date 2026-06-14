@@ -33,6 +33,7 @@ define('ASSETS_URL', BASE_URL . 'assets/');
 // Load configuration
 require_once CONFIG_DIR . '/database.php';
 require_once CONFIG_DIR . '/app.php';
+require_once CONFIG_DIR . '/mail.php';
 
 // Autoload core classes
 spl_autoload_register(function ($class) {

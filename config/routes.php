@@ -23,6 +23,7 @@ return [
     'POST /forgot-password' => 'Auth/ForgotPasswordController@sendOTP',
     'GET /verify-otp' => 'Auth/ForgotPasswordController@showVerifyOTP',
     'POST /verify-otp' => 'Auth/ForgotPasswordController@verifyOTP',
+    'POST /resend-otp' => 'Auth/ForgotPasswordController@resendOTP',
     'GET /reset-password' => 'Auth/ForgotPasswordController@showResetPassword',
     'POST /reset-password' => 'Auth/ForgotPasswordController@resetPassword',
 

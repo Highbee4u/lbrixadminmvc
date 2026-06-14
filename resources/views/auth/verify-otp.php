@@ -31,7 +31,13 @@
                                         <?php echo is_array($errors['general']) ? $errors['general'][0] : $errors['general']; ?>
                                     </div>
                                 <?php endif; ?>
-                                
+
+                                <?php if (Session::flash('otp_resent')): ?>
+                                    <div class="alert alert-success text-white" role="alert">
+                                        <i class="fa fa-check-circle me-2"></i> A new OTP has been sent to your email.
+                                    </div>
+                                <?php endif; ?>
+
                                 <div class="alert alert-info text-white mb-3" role="alert">
                                     <i class="fa fa-envelope me-2"></i>
                                     We've sent a 6-digit OTP to:<br>
@@ -63,9 +69,13 @@
                                 </form>
                                 
                                 <div class="text-center mt-3">
-                                    <a href="<?php echo url('forgot-password'); ?>" class="text-sm text-muted">
-                                        <i class="fa fa-redo me-1"></i> Didn't receive OTP? Request new one
-                                    </a>
+                                    <span class="text-sm text-muted">Didn't receive the OTP?</span>
+                                    <form method="POST" action="<?php echo url('resend-otp'); ?>" id="resendOtpForm" class="d-inline">
+                                        <input type="hidden" name="csrf_token" value="<?php echo Session::token(); ?>">
+                                        <button type="submit" id="resendOtpBtn" class="btn btn-link btn-sm text-primary font-weight-bold p-0 m-0 align-baseline">
+                                            <i class="fa fa-redo me-1"></i> Resend OTP
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                             <div class="card-footer text-center pt-0 px-lg-2 px-1">
@@ -94,7 +104,30 @@
 document.addEventListener('DOMContentLoaded', function() {
     const otpInput = document.getElementById('otp');
     const form = document.getElementById('verifyOtpForm');
-    
+
+    // Resend OTP cooldown (matches the 60s server-side cooldown)
+    const resendBtn = document.getElementById('resendOtpBtn');
+    <?php
+        $lastSent = Session::get('otp_last_sent', 0);
+        $remaining = $lastSent ? max(0, 60 - (time() - $lastSent)) : 0;
+    ?>
+    let resendCooldown = <?php echo (int) $remaining; ?>;
+    if (resendBtn && resendCooldown > 0) {
+        const label = resendBtn.innerHTML;
+        const tick = function() {
+            if (resendCooldown > 0) {
+                resendBtn.disabled = true;
+                resendBtn.innerHTML = '<i class="fa fa-clock me-1"></i> Resend OTP in ' + resendCooldown + 's';
+                resendCooldown--;
+                setTimeout(tick, 1000);
+            } else {
+                resendBtn.disabled = false;
+                resendBtn.innerHTML = label;
+            }
+        };
+        tick();
+    }
+
     // Auto-focus on OTP input
     if (otpInput) {
         otpInput.focus();
